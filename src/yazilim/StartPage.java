@@ -7,9 +7,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,8 +18,6 @@ import java.awt.event.ActionEvent;
 public class StartPage {
 	private JFrame frame;
 	private static Connection conn;
-	private JTextField nameField;
-	private JLabel nameLabel;
 
 	/**
 	 * Launch the application.
@@ -37,6 +35,11 @@ public class StartPage {
 			}
 		});
 	}
+	
+	public StartPage() throws SQLException {
+		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
+		initialize();
+	}
 
 	/**
 	 * Create the application.
@@ -51,34 +54,82 @@ public class StartPage {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setTitle("Start Page");
-		frame.setBounds(100, 100, 373, 293);
+		frame.setTitle("Başlangıç Sayfası");
+		frame.setBounds(100, 100, 450, 230);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		
-		nameField = new JTextField();
-		nameField.setColumns(10);
-		nameField.setBounds(30, 70, 125, 25);
-		frame.getContentPane().add(nameField);
-		nameLabel = new JLabel("Name:");
-		nameLabel.setFont(new Font("Tahoma", Font.BOLD, 16));
-		nameLabel.setBounds(30, 50, 100, 15);
-		frame.getContentPane().add(nameLabel);
 
-		
-		String query = "SELECT name FROM customers WHERE customer_id = 1;";
-		PreparedStatement statement;
-		try {
-			statement = conn.prepareStatement(query);
-			ResultSet r = statement.executeQuery();
-			if (r.next()) {
-				nameField.setText(r.getString(1));
+		JButton btnUserLogin = new JButton("Kullanıcı Girişi");
+		btnUserLogin.setFocusable(false);
+		btnUserLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				UserLoginPage login = new UserLoginPage(conn);
+				login.showFrame();
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		});
+		btnUserLogin.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnUserLogin.setBounds(35, 30, 180, 35);
+		frame.getContentPane().add(btnUserLogin);
 		
+		JButton btnDealerLogin = new JButton("Bayi Girişi");
+		btnDealerLogin.setFocusable(false);
+		btnDealerLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				DealerLoginPage login = new DealerLoginPage(conn);
+				login.showFrame();
+			}
+		});
+		btnDealerLogin.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnDealerLogin.setBounds(220, 30, 180, 35);
+		frame.getContentPane().add(btnDealerLogin);
+
+		JButton btnRegister = new JButton("Kullanıcı Kayıt");
+		btnRegister.setFocusable(false);
+		btnRegister.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				UserRegisterPage register = new UserRegisterPage(conn);
+				register.showFrame();
+			}
+		});
+		btnRegister.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnRegister.setBounds(35, 85, 180, 35);
+		frame.getContentPane().add(btnRegister);
+		
+		JButton btnWarehouseLogin = new JButton("Depo Girişi");
+		btnWarehouseLogin.setFocusable(false);
+		btnWarehouseLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				WarehouseLoginPage login = new WarehouseLoginPage(conn);
+				login.showFrame();
+			}
+		});
+		btnWarehouseLogin.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnWarehouseLogin.setBounds(220, 85, 180, 35);
+		frame.getContentPane().add(btnWarehouseLogin);
+		
+		JButton btnQuit = new JButton("Çık");
+		btnQuit.setFocusable(false);
+		btnQuit.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        try {
+		            if (conn != null && !conn.isClosed()) {
+		                conn.close();
+		            }
+		        } catch (SQLException e1) {
+		            e1.printStackTrace();
+		        }
+		        frame.dispose();
+		        System.exit(0); // Ensure the application exits
+		    }
+		});
+		btnQuit.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnQuit.setFocusable(false);
+		btnQuit.setBounds(130, 135, 156, 35);
+		frame.getContentPane().add(btnQuit);
 	}
 
 	public void showFrame() {
