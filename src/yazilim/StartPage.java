@@ -59,12 +59,12 @@ public class StartPage {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
-		JButton btnUserLogin = new JButton("Kullanıcı Girişi");
+		JButton btnUserLogin = new JButton("Müşteri Girişi");
 		btnUserLogin.setFocusable(false);
 		btnUserLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.setVisible(false);
-				UserLoginPage login = new UserLoginPage(conn);
+				CustomerLoginPage login = new CustomerLoginPage(conn);
 				login.showFrame();
 			}
 		});
@@ -90,7 +90,7 @@ public class StartPage {
 		btnRegister.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.setVisible(false);
-				UserRegisterPage register = new UserRegisterPage(conn);
+				CustomerRegisterPage register = new CustomerRegisterPage(conn);
 				register.showFrame();
 			}
 		});

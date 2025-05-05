@@ -90,7 +90,7 @@ public class WarehouseLoginPage {
 			public void actionPerformed(ActionEvent e) {
 				String email = emailField.getText();
 				String password = passwordField.getText();
-				String query = "SELECT login_user(?,?);";
+				String query = "SELECT login_warehouse_or_dealer(?,?);";
 				try {
 					PreparedStatement statement = conn.prepareStatement(query);
 					statement.setString(1, email);
@@ -99,7 +99,7 @@ public class WarehouseLoginPage {
 					ResultSet r = statement.executeQuery();
 					r.next();
 					if (r.getBoolean(1)) {
-						query = "SELECT user_id FROM users WHERE email = ?";
+						query = "SELECT id FROM warehouse_or_dealer WHERE email = ?";
 						PreparedStatement p = conn.prepareStatement(query);
 						p.clearParameters();
 						p.setString(1, emailField.getText());

@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
-public class UserMainPage {
+public class CustomerMainPage {
 	private JFrame frame;
 	private static Connection conn;
 	private int usrId;
@@ -28,7 +28,7 @@ public class UserMainPage {
 			public void run() {
 				Connection dummyConn = null;
 				try {
-					UserMainPage window = new UserMainPage(1, dummyConn);
+					CustomerMainPage window = new CustomerMainPage(1, dummyConn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -37,7 +37,7 @@ public class UserMainPage {
 		});
 	}
 	
-	public UserMainPage() throws SQLException {
+	public CustomerMainPage() throws SQLException {
 		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
 		usrId = 1;
 		initialize();
@@ -46,7 +46,7 @@ public class UserMainPage {
 	/**
 	 * Create the application.
 	 */
-	public UserMainPage(int userId, Connection parent_conn) {
+	public CustomerMainPage(int userId, Connection parent_conn) {
 		usrId = userId;
 		conn = parent_conn;
 		initialize();
@@ -57,7 +57,7 @@ public class UserMainPage {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setTitle("Kullanıcı Ana Sayfası");
+		frame.setTitle("Müşteri Ana Sayfası");
 		frame.setBounds(100, 100, 450, 230);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);

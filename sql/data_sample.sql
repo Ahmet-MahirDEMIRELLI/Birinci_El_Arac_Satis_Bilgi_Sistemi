@@ -6,6 +6,7 @@ VALUES
 ('ahmet@example.com', 'hashed_pass4', 'Ahmet', 'Çetin', '05443334455', 'male', 35, 'Avukat', 'medium', 'Bursa'),
 ('elif@example.com', 'hashed_pass5', 'Elif', 'Koç', '05441112233', 'female', 28, 'Grafiker', 'medium', 'Antalya');
 
+/*
 INSERT INTO admin (email, password_admin, first_name, last_name)
 VALUES 
 ('admin1@example.com', 'hashed_admin1', 'Zeynep', 'Yılmaz'),
@@ -13,6 +14,14 @@ VALUES
 ('admin3@example.com', 'hashed_admin3', 'Selin', 'Acar'),
 ('admin4@example.com', 'hashed_admin4', 'Murat', 'Demir'),
 ('admin5@example.com', 'hashed_admin5', 'Esra', 'Yıldız');
+*/
+
+INSERT INTO warehouse_or_dealer (email, password, type)
+VALUES 
+('dealer1@example.com', 'hashed_dealer1', 'DEALER'),
+('warehouse1@example.com', 'hashed_warehouse1', 'WAREHOUSE'),
+('dealer2@example.com', 'hashed_dealer2', 'DEALER'),
+('warehouse2@example.com', 'hashed_warehouse2', 'WAREHOUSE');
 
 INSERT INTO vehicle (brand, model, year, package, price)
 VALUES 
@@ -45,5 +54,3 @@ VALUES
 (3, 'test_drive', 3, '2025-04-12', 'rejected'),
 (4, 'price_offer', 4, '2025-04-13', 'accepted'),
 (5, 'test_drive', 5, '2025-04-14', 'pending');
-
-

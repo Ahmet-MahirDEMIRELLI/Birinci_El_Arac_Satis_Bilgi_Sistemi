@@ -16,7 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
-public class UserRegisterPage {
+public class CustomerRegisterPage {
 	private Connection conn;
 	private JFrame frame;
 	private JTextField nameField;
@@ -43,7 +43,7 @@ public class UserRegisterPage {
 			public void run() {
 				Connection dummyConn = null;
 				try {
-					UserRegisterPage window = new UserRegisterPage(dummyConn);
+					CustomerRegisterPage window = new CustomerRegisterPage(dummyConn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -52,7 +52,7 @@ public class UserRegisterPage {
 		});
 	}
 	
-	public UserRegisterPage() throws SQLException {
+	public CustomerRegisterPage() throws SQLException {
 		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
 		initialize();
 	}
@@ -60,7 +60,7 @@ public class UserRegisterPage {
 	/**
 	 * Create the application.
 	 */
-	public UserRegisterPage(Connection parent_conn) {
+	public CustomerRegisterPage(Connection parent_conn) {
 		conn = parent_conn;
 		initialize();
 	}
@@ -78,7 +78,7 @@ public class UserRegisterPage {
 		JButton registerButton = new JButton("Kayıt Ol");
 		registerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String query = "SELECT register_user(?,?,?,?,?,?);";
+				String query = "SELECT register_customer(?,?,?,?,?,?);";
 				PreparedStatement statement;
 				try {
 					if (nameField.getText().length() >= 3 && surnameField.getText().length() >= 3 && addressField.getText().length() >= 3
@@ -96,7 +96,7 @@ public class UserRegisterPage {
 								JOptionPane.showMessageDialog(null,
 										"Your new id is : " + r.getInt(1));
 								newId = r.getInt(1);
-								UserMainPage pg = new UserMainPage(newId, conn);
+								CustomerMainPage pg = new CustomerMainPage(newId, conn);
 								pg.showFrame();
 								frame.setVisible(false);
 							}

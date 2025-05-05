@@ -17,7 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
-public class UserLoginPage {
+public class CustomerLoginPage {
 	private JFrame frame;
 	private JTextField emailField;
 	private JTextField passwordField;
@@ -32,7 +32,7 @@ public class UserLoginPage {
 			public void run() {
 				Connection dummyConn = null;
 				try {
-					UserLoginPage window = new UserLoginPage(dummyConn);
+					CustomerLoginPage window = new CustomerLoginPage(dummyConn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -41,7 +41,7 @@ public class UserLoginPage {
 		});
 	}
 	
-	public UserLoginPage() throws SQLException {
+	public CustomerLoginPage() throws SQLException {
 		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
 		initialize();
 	}
@@ -49,7 +49,7 @@ public class UserLoginPage {
 	/**
 	 * Create the application.
 	 */
-	public UserLoginPage(Connection parent_conn) {
+	public CustomerLoginPage(Connection parent_conn) {
 		conn = parent_conn;
 		initialize();
 	}
@@ -59,7 +59,7 @@ public class UserLoginPage {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setTitle("Kullanıcı Giriş Sayfası");
+		frame.setTitle("Müşteri Giriş Sayfası");
 		frame.setBounds(100, 100, 373, 293);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
@@ -90,7 +90,7 @@ public class UserLoginPage {
 			public void actionPerformed(ActionEvent e) {
 				String email = emailField.getText();
 				String password = passwordField.getText();
-				String query = "SELECT login_user(?,?);";
+				String query = "SELECT login_customer(?,?);";
 				try {
 					PreparedStatement statement = conn.prepareStatement(query);
 					statement.setString(1, email);
@@ -99,14 +99,14 @@ public class UserLoginPage {
 					ResultSet r = statement.executeQuery();
 					r.next();
 					if (r.getBoolean(1)) {
-						query = "SELECT user_id FROM users WHERE email = ?";
+						query = "SELECT customer_id FROM customer WHERE email = ?";
 						PreparedStatement p = conn.prepareStatement(query);
 						p.clearParameters();
 						p.setString(1, emailField.getText());
 						r = p.executeQuery();
 						r.next();
 						
-						UserMainPage user_main_page = new UserMainPage(r.getInt(1), conn);
+						CustomerMainPage user_main_page = new CustomerMainPage(r.getInt(1), conn);
 						user_main_page.showFrame();
 						frame.setVisible(false);
 					} else {

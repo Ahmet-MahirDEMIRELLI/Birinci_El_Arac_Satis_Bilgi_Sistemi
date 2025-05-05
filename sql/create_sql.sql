@@ -19,6 +19,7 @@ CREATE TABLE customer (
     first_visit_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+/*
 CREATE TABLE admin (
     admin_id SERIAL PRIMARY KEY,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -27,6 +28,15 @@ CREATE TABLE admin (
     last_name VARCHAR(50) NOT NULL
     
 );
+*/
+
+CREATE TABLE warehouse_or_dealer (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    type VARCHAR(50) NOT NULL
+);
+
 
 CREATE TABLE vehicle (
     vehicle_id SERIAL PRIMARY KEY,
@@ -115,11 +125,23 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION login_warehouse_or_dealer(
+    p_email VARCHAR(100),
+    p_password VARCHAR(255)
+)
+RETURNS BOOLEAN AS $$
+DECLARE
+    found_password TEXT;
+BEGIN
+    SELECT password INTO found_password
+    FROM warehouse_or_dealer
+    WHERE email = p_email;
 
-
-
-
-
-
-
+    IF found_password IS NOT NULL AND found_password = p_password THEN
+        RETURN TRUE;
+    ELSE
+        RETURN FALSE;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
 
