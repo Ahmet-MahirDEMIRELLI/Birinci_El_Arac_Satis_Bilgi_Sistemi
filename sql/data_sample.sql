@@ -18,10 +18,13 @@ VALUES
 
 INSERT INTO warehouse_or_dealer (email, password, type)
 VALUES 
-('dealer1@example.com', 'hashed_dealer1', 'DEALER'),
-('warehouse1@example.com', 'hashed_warehouse1', 'WAREHOUSE'),
+('dealer@example.com', 'hashed_dealer', 'DEALER'),
+('warehouse@example.com', 'hashed_warehouse', 'WAREHOUSE');
+
+/* Birden fazla bayi veya depo olucaksa stock tablosunda location_type değil warehouse_or_dealer'I işararet eden location_id foreignkey i tutulmalı
 ('dealer2@example.com', 'hashed_dealer2', 'DEALER'),
 ('warehouse2@example.com', 'hashed_warehouse2', 'WAREHOUSE');
+*/
 
 INSERT INTO vehicle (brand, model, year, package, price)
 VALUES 
