@@ -18,7 +18,7 @@ import java.awt.event.ActionEvent;
 public class WarehouseMainPage {
 	private JFrame frame;
 	private static Connection conn;
-	private int usrId;
+	private int warehouseId;
 	
 	/**
 	 * Launch the application.
@@ -39,15 +39,15 @@ public class WarehouseMainPage {
 	
 	public WarehouseMainPage() throws SQLException {
 		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-		usrId = 1;
+		warehouseId = 1;
 		initialize();
 	}
 
 	/**
 	 * Create the application.
 	 */
-	public WarehouseMainPage(int userId, Connection parent_conn) {
-		usrId = userId;
+	public WarehouseMainPage(int wareHouseId, Connection parent_conn) {
+		warehouseId = wareHouseId;
 		conn = parent_conn;
 		initialize();
 	}
@@ -61,6 +61,19 @@ public class WarehouseMainPage {
 		frame.setBounds(100, 100, 450, 230);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		
+		JButton offerButton = new JButton("Yeni Araç Ekle");
+		offerButton.setFocusable(false);
+		offerButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				AddCarToStockPage addCarToStockPage = new AddCarToStockPage(warehouseId, conn);
+				addCarToStockPage.showFrame();
+			}
+		});
+		offerButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		offerButton.setBounds(150, 30, 200, 30);
+		frame.getContentPane().add(offerButton);
 		
 		JButton returnButton = new JButton("Çıkış Yap");
 		returnButton.addActionListener(new ActionListener() {

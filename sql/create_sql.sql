@@ -145,3 +145,35 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION add_vehicle(
+    p_brand VARCHAR(50),
+    p_model VARCHAR(50),
+    p_year INT,
+    p_package VARCHAR(50),
+    p_price NUMERIC(12, 2)
+)
+RETURNS BOOLEAN AS $$
+DECLARE
+    new_vehicle_id INTEGER;
+BEGIN
+    INSERT INTO vehicle(
+        brand, model, year, package, price
+    )
+    VALUES (
+        p_brand, p_model, p_year, p_package, p_price
+    )
+    RETURNING vehicle_id INTO new_vehicle_id;
+	
+	IF new_vehicle_id != 0 THEN
+		INSERT INTO stock(
+			vehicle_id, location_type, quantity
+		)
+		VALUES (
+			new_vehicle_id, 'warehouse', 1
+		);
+        RETURN TRUE;
+    ELSE
+        RETURN FALSE;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
