@@ -58,7 +58,7 @@ public class WarehouseMainPage {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setTitle("Depo Ana Sayfası");
-		frame.setBounds(100, 100, 450, 230);
+		frame.setBounds(100, 100, 300, 230);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -72,7 +72,7 @@ public class WarehouseMainPage {
 			}
 		});
 		newCarButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-		newCarButton.setBounds(150, 30, 200, 30);
+		newCarButton.setBounds(45, 30, 200, 30);
 		frame.getContentPane().add(newCarButton);
 		
 		JButton returnButton = new JButton("Çıkış Yap");
@@ -85,7 +85,7 @@ public class WarehouseMainPage {
 			}
 		});
 		returnButton.setFont(new Font("Tahoma", Font.BOLD, 18));
-		returnButton.setBounds(30, 30, 100, 30);
+		returnButton.setBounds(45, 70, 200, 30);
 		frame.getContentPane().add(returnButton);
 		returnButton.setFocusable(false);
 	}

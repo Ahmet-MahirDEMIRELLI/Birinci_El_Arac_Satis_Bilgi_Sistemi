@@ -156,7 +156,7 @@ public class AddCarToStockPage {
 							JOptionPane.showMessageDialog(null, "Ekleme başarılı.");
 						} 
 						else {
-							JOptionPane.showMessageDialog(null, "Ekleme başarısız.");
+							JOptionPane.showMessageDialog(null, "Bu araç zaten eklenmiş.");
 						}
 					} else {
 						JOptionPane.showMessageDialog(null, "50 karakterden uzun veri girilemez.");

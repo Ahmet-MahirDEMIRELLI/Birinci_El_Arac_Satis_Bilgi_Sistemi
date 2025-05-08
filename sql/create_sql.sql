@@ -156,7 +156,19 @@ CREATE OR REPLACE FUNCTION add_vehicle(
 RETURNS BOOLEAN AS $$
 DECLARE
     new_vehicle_id INTEGER;
+	existing_vehicle_id INTEGER;
 BEGIN
+	SELECT vehicle_id INTO existing_vehicle_id
+    FROM vehicle
+    WHERE brand = p_brand
+      AND model = p_model
+      AND year = p_year
+      AND package = p_package;
+
+    IF existing_vehicle_id IS NOT NULL THEN
+        RETURN FALSE;
+    END IF;
+
     INSERT INTO vehicle(
         brand, model, year, package, price
     )
