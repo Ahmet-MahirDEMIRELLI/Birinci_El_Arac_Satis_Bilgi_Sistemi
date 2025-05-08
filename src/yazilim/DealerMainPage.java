@@ -18,7 +18,7 @@ import java.awt.event.ActionEvent;
 public class DealerMainPage {
 	private JFrame frame;
 	private static Connection conn;
-	private int usrId;
+	private int dealerId;
 	
 	/**
 	 * Launch the application.
@@ -39,15 +39,15 @@ public class DealerMainPage {
 	
 	public DealerMainPage() throws SQLException {
 		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-		usrId = 1;
+		dealerId = 1;
 		initialize();
 	}
 
 	/**
 	 * Create the application.
 	 */
-	public DealerMainPage(int userId, Connection parent_conn) {
-		usrId = userId;
+	public DealerMainPage(int dlrId, Connection parent_conn) {
+		dealerId = dlrId;
 		conn = parent_conn;
 		initialize();
 	}
@@ -61,6 +61,19 @@ public class DealerMainPage {
 		frame.setBounds(100, 100, 450, 230);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		
+		JButton getFromStockButton = new JButton("Stoktan Araç Çek");
+		getFromStockButton.setFocusable(false);
+		getFromStockButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				PullCarFromStockPage pullCarFromStockPage = new PullCarFromStockPage(dealerId, conn);
+				pullCarFromStockPage.showFrame();
+			}
+		});
+		getFromStockButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		getFromStockButton.setBounds(150, 30, 200, 30);
+		frame.getContentPane().add(getFromStockButton);
 		
 		JButton returnButton = new JButton("Çıkış Yap");
 		returnButton.addActionListener(new ActionListener() {

@@ -62,18 +62,18 @@ public class WarehouseMainPage {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		JButton offerButton = new JButton("Yeni Araç Ekle");
-		offerButton.setFocusable(false);
-		offerButton.addActionListener(new ActionListener() {
+		JButton newCarButton = new JButton("Yeni Araç Ekle");
+		newCarButton.setFocusable(false);
+		newCarButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.setVisible(false);
 				AddCarToStockPage addCarToStockPage = new AddCarToStockPage(warehouseId, conn);
 				addCarToStockPage.showFrame();
 			}
 		});
-		offerButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-		offerButton.setBounds(150, 30, 200, 30);
-		frame.getContentPane().add(offerButton);
+		newCarButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		newCarButton.setBounds(150, 30, 200, 30);
+		frame.getContentPane().add(newCarButton);
 		
 		JButton returnButton = new JButton("Çıkış Yap");
 		returnButton.addActionListener(new ActionListener() {
