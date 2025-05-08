@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import yazilim.classes.Vehicle;
@@ -26,6 +27,7 @@ public class PullCarFromStockPage {
 	private JFrame frame;
 	private static Connection conn;
 	private int dealerId;
+	private JComboBox<String> vehicleSelector;
 	ArrayList<VehicleStock> vehicleStockList = new ArrayList<>();
 	ArrayList<Vehicle> vehicles = new ArrayList<>();
 	
@@ -35,9 +37,9 @@ public class PullCarFromStockPage {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				Connection dummyConn = null;
 				try {
-					PullCarFromStockPage window = new PullCarFromStockPage(1, dummyConn);
+					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
+					PullCarFromStockPage window = new PullCarFromStockPage(1, conn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -65,49 +67,145 @@ public class PullCarFromStockPage {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setTitle("Stoktan Araç Çekme Sayfası");
-		frame.setBounds(100, 100, 450, 230);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
-		
-		vehicleStockList = getVehicleStock();
-		vehicles = getVehicles();
-		JComboBox<String> vehicleSelector = new JComboBox<>();
-		vehicleSelector.setBounds(30, 30, 380, 30);
-		frame.getContentPane().add(vehicleSelector);
+	    frame = new JFrame();
+	    frame.setTitle("Stoktan Araç Çekme Sayfası");
+	    frame.setBounds(100, 100, 450, 230);
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    frame.getContentPane().setLayout(null);
 
-		// Araçları listeye doldur
-		for (VehicleStock vs : vehicleStockList) {
-		    for (Vehicle v : vehicles) {
-		        if (v.getVehicleId() == vs.getVehicleId()) {
-		            String item = String.format("%s / %s / %d / %s / %.2f TL / Stok: %d",
-		                v.getBrand(),
-		                v.getModel(),
-		                v.getYear(),
-		                v.getPckg(),
-		                v.getPrice(),
-		                vs.getStock());
-		            vehicleSelector.addItem(item);
-		            break;
-		        }
-		    }
-		}
-		
-		
-		JButton returnButton = new JButton("Çıkış Yap");
-		returnButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				StartPage start_page;
-				start_page = new StartPage(conn);
-				start_page.showFrame();
-				frame.setVisible(false);
-			}
-		});
-		returnButton.setFont(new Font("Tahoma", Font.BOLD, 18));
-		returnButton.setBounds(30, 30, 100, 30);
-		frame.getContentPane().add(returnButton);
-		returnButton.setFocusable(false);
+	    vehicleStockList = getVehicleStock();
+	    vehicles = getVehicles();
+
+	    vehicleSelector = new JComboBox<>();
+	    vehicleSelector.setBounds(30, 30, 380, 30);
+	    frame.getContentPane().add(vehicleSelector);
+
+	    // Araçları listeye doldur
+	    ArrayList<Integer> vehicleIdMap = new ArrayList<>();
+	    for (VehicleStock vs : vehicleStockList) {
+	        for (Vehicle v : vehicles) {
+	            if (v.getVehicleId() == vs.getVehicleId()) {
+	                String item = String.format("%s / %s / %d / %s / %.2f TL / Stok: %d",
+	                    v.getBrand(),
+	                    v.getModel(),
+	                    v.getYear(),
+	                    v.getPckg(),
+	                    v.getPrice(),
+	                    vs.getStock());
+	                vehicleSelector.addItem(item);
+	                vehicleIdMap.add(v.getVehicleId()); // index -> vehicle_id eşlemesi
+	                break;
+	            }
+	        }
+	    }
+
+	    JButton pullButton = new JButton("Araç Çek");
+	    pullButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+	    pullButton.setBounds(150, 80, 150, 30);
+	    frame.getContentPane().add(pullButton);
+	    pullButton.setFocusable(false);
+
+	    pullButton.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            int selectedIndex = vehicleSelector.getSelectedIndex();
+	            if (selectedIndex != -1) {
+	                int vehicleId = vehicleIdMap.get(selectedIndex);
+
+	                try {
+	                    PreparedStatement updateWarehouseStmt = conn.prepareStatement(
+	                        "UPDATE stock SET quantity = quantity - 1 WHERE vehicle_id = ? AND location_type = 'warehouse'"
+	                    );
+	                    updateWarehouseStmt.setInt(1, vehicleId);
+	                    int rowsAffected = updateWarehouseStmt.executeUpdate();
+
+	                    if (rowsAffected > 0) {
+	                        PreparedStatement checkWarehouseStmt = conn.prepareStatement(
+	                            "SELECT quantity FROM stock WHERE vehicle_id = ? AND location_type = 'warehouse'"
+	                        );
+	                        checkWarehouseStmt.setInt(1, vehicleId);
+	                        ResultSet rsWarehouse = checkWarehouseStmt.executeQuery();
+
+	                        if (rsWarehouse.next()) {
+	                            int warehouseQuantity = rsWarehouse.getInt("quantity");
+	                            if (warehouseQuantity == 0) {
+	                                PreparedStatement deleteWarehouseStmt = conn.prepareStatement(
+	                                    "DELETE FROM stock WHERE vehicle_id = ? AND location_type = 'warehouse'"
+	                                );
+	                                deleteWarehouseStmt.setInt(1, vehicleId);
+	                                deleteWarehouseStmt.executeUpdate();
+	                                System.out.println("Warehouse stoğunda araç kalmadı, kayıt silindi.");
+	                            }
+	                        }
+
+	                        PreparedStatement checkStmt = conn.prepareStatement(
+	                            "SELECT * FROM stock WHERE vehicle_id = ? AND location_type = 'dealer'"
+	                        );
+	                        checkStmt.setInt(1, vehicleId);
+	                        ResultSet rs = checkStmt.executeQuery();
+
+	                        if (rs.next()) {
+	                            PreparedStatement updateDealerStmt = conn.prepareStatement(
+	                                "UPDATE stock SET quantity = quantity + 1 WHERE vehicle_id = ? AND location_type = 'dealer'"
+	                            );
+	                            updateDealerStmt.setInt(1, vehicleId);
+	                            updateDealerStmt.executeUpdate();
+	                            JOptionPane.showMessageDialog(null, "Araç çekme başarılı.");
+	                            reloadVehicleData();
+	                        } 
+	                        else {
+	                            PreparedStatement insertDealerStmt = conn.prepareStatement(
+	                                "INSERT INTO stock (vehicle_id, location_type, quantity) VALUES (?, 'dealer', 1)"
+	                            );
+	                            insertDealerStmt.setInt(1, vehicleId);
+	                            insertDealerStmt.executeUpdate();
+	                            JOptionPane.showMessageDialog(null, "Araç çekme başarılı.");
+	                            reloadVehicleData();
+	                        }
+	                    } else {
+	                    	JOptionPane.showMessageDialog(null, "Araç çekme başarısız.");
+	                    }
+	                } catch (SQLException ex) {
+	                    ex.printStackTrace();
+	                }
+	            }
+	        }
+	    });
+
+
+
+	    JButton returnButton = new JButton("Çıkış Yap");
+	    returnButton.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            StartPage start_page = new StartPage(conn);
+	            start_page.showFrame();
+	            frame.setVisible(false);
+	        }
+	    });
+	    returnButton.setFont(new Font("Tahoma", Font.BOLD, 18));
+	    returnButton.setBounds(30, 130, 100, 30);
+	    frame.getContentPane().add(returnButton);
+	    returnButton.setFocusable(false);
+	}
+
+	private void reloadVehicleData() {
+		vehicleStockList = getVehicleStock();
+	    vehicles = getVehicles();
+	    vehicleSelector.removeAllItems();
+	    for (VehicleStock vs : vehicleStockList) {
+	        for (Vehicle v : vehicles) {
+	            if (v.getVehicleId() == vs.getVehicleId()) {
+	                String item = String.format("%s / %s / %d / %s / %.2f TL / Stok: %d",
+	                    v.getBrand(),
+	                    v.getModel(),
+	                    v.getYear(),
+	                    v.getPckg(),
+	                    v.getPrice(),
+	                    vs.getStock());
+	                vehicleSelector.addItem(item);
+	                break;
+	            }
+	        }
+	    }
 	}
 	
 	public ArrayList<VehicleStock> getVehicleStock() {
