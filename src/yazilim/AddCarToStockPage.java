@@ -151,7 +151,8 @@ public class AddCarToStockPage {
 		JButton addButton = new JButton("Ekle");
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int result = addCarToStock();
+				BigDecimal price = BigDecimal.valueOf((double) priceSpinner.getValue());
+				int result = addCarToStock(brandField.getText(), modelField.getText(), (int) yearSpinner.getValue(), packageField.getText(), price, (int) quantitySpinner.getValue());
                 if (result == 1) {
                     JOptionPane.showMessageDialog(null, "Araç ekleme başarılı.");
                 } 
@@ -185,19 +186,18 @@ public class AddCarToStockPage {
 		returnButton.setFocusable(false);
 	}
 	
-	public int addCarToStock() {
+	public int addCarToStock(String brand, String model, int year, String pckg, BigDecimal price, int quantity) {
 		String query = "SELECT add_vehicle(?,?,?,?,?,?);";
 		PreparedStatement statement;
 		try {
 			if (brandField.getText().length() <= 50 && modelField.getText().length() <= 50 && packageField.getText().length() <= 50) {
-				BigDecimal price = BigDecimal.valueOf((double) priceSpinner.getValue());
 				statement = conn.prepareStatement(query);
-				statement.setString(1, brandField.getText());
-				statement.setString(2, modelField.getText());
-				statement.setInt(3, (int) yearSpinner.getValue());
-				statement.setString(4, packageField.getText());
+				statement.setString(1, brand);
+				statement.setString(2, model);
+				statement.setInt(3, year);
+				statement.setString(4, pckg);
 				statement.setBigDecimal(5, price);
-				statement.setInt(6, (int) quantitySpinner.getValue());
+				statement.setInt(6, quantity);
 				
 				ResultSet r = statement.executeQuery();
 				r.next();
