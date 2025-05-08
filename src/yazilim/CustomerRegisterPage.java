@@ -21,7 +21,7 @@ import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
 public class CustomerRegisterPage {
-	private Connection conn;
+	private static Connection conn;
 	private JFrame frame;
 	private JTextField nameField;
 	private JTextField surnameField;
@@ -50,9 +50,9 @@ public class CustomerRegisterPage {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				Connection dummyConn = null;
 				try {
-					CustomerRegisterPage window = new CustomerRegisterPage(dummyConn);
+					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
+					CustomerRegisterPage window = new CustomerRegisterPage(conn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

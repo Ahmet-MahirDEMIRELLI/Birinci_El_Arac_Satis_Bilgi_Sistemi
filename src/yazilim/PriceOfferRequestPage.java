@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import yazilim.requests.PriceOfferRequest;
 
+import java.awt.EventQueue;
 import java.awt.event.*;
 import java.sql.*;
 import java.time.LocalDate;
@@ -12,7 +13,24 @@ public class PriceOfferRequestPage {
     private JFrame frame;
     private JComboBox<String> vehicleCombo;
     private int userId;
-    private Connection conn;
+    private static Connection conn;
+    
+    /**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
+					PriceOfferRequestPage window = new PriceOfferRequestPage(1, conn);
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
     public PriceOfferRequestPage(int userId, Connection conn) {
         this.userId = userId;

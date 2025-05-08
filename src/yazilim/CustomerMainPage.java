@@ -26,9 +26,9 @@ public class CustomerMainPage {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				Connection dummyConn = null;
 				try {
-					CustomerMainPage window = new CustomerMainPage(1, dummyConn);
+					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
+					CustomerMainPage window = new CustomerMainPage(1, conn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

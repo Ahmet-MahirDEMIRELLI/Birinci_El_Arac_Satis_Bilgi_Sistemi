@@ -21,7 +21,7 @@ public class WarehouseLoginPage {
 	private JFrame frame;
 	private JTextField emailField;
 	private JTextField passwordField;
-	private Connection conn;
+	private static Connection conn;
 	private JLabel lblNewLabel;
 
 	/**
@@ -30,9 +30,9 @@ public class WarehouseLoginPage {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				Connection dummyConn = null;
 				try {
-					WarehouseLoginPage window = new WarehouseLoginPage(dummyConn);
+					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
+					WarehouseLoginPage window = new WarehouseLoginPage(conn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

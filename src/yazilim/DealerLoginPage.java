@@ -21,7 +21,7 @@ public class DealerLoginPage {
 	private JFrame frame;
 	private JTextField emailField;
 	private JTextField passwordField;
-	private Connection conn;
+	private static Connection conn;
 	private JLabel lblNewLabel;
 
 	/**
@@ -30,9 +30,9 @@ public class DealerLoginPage {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				Connection dummyConn = null;
 				try {
-					DealerLoginPage window = new DealerLoginPage(dummyConn);
+					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
+					DealerLoginPage window = new DealerLoginPage(conn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

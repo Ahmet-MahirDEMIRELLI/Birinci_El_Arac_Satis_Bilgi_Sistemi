@@ -26,7 +26,7 @@ import java.awt.event.ActionEvent;
 
 public class AddCarToStockPage {
 	private JFrame frame;
-	private Connection conn;
+	private static Connection conn;
 	private int warehouseId;
 	private JTextField brandField;
 	private JTextField modelField;
@@ -45,9 +45,9 @@ public class AddCarToStockPage {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				Connection dummyConn = null;
 				try {
-					AddCarToStockPage window = new AddCarToStockPage(1, dummyConn);
+					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
+					AddCarToStockPage window = new AddCarToStockPage(1, conn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
