@@ -70,7 +70,7 @@ CREATE TABLE requests (
     request_type VARCHAR(20) NOT NULL CHECK (request_type IN ('test_drive', 'price_offer')),
     vehicle_id INT REFERENCES vehicle(vehicle_id),
     request_date DATE NOT NULL,
-    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected'))
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected')),
     price NUMERIC(10, 2) CHECK ((request_type = 'price_offer' AND price IS NOT NULL) OR (request_type = 'test_drive' AND price IS NULL))
 );
 

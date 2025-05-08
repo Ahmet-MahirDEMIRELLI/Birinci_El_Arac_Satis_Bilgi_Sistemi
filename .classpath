@@ -7,5 +7,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/postgresql-42.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/junit-jupiter-api_5.10.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

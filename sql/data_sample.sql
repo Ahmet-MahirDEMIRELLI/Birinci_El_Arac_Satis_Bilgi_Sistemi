@@ -40,7 +40,7 @@ VALUES
 (2, 'dealer', 5),
 (3, 'warehouse', 8),
 (4, 'dealer', 4),
-(5, 'warehouse', 12);
+(5, 'warehouse', 1);
 
 INSERT INTO sales (vehicle_id, user_id, sale_date, sale_price)
 VALUES 

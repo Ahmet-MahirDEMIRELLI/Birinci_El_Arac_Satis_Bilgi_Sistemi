@@ -110,62 +110,12 @@ public class PullCarFromStockPage {
 	            int selectedIndex = vehicleSelector.getSelectedIndex();
 	            if (selectedIndex != -1) {
 	                int vehicleId = vehicleIdMap.get(selectedIndex);
-
-	                try {
-	                    PreparedStatement updateWarehouseStmt = conn.prepareStatement(
-	                        "UPDATE stock SET quantity = quantity - 1 WHERE vehicle_id = ? AND location_type = 'warehouse'"
-	                    );
-	                    updateWarehouseStmt.setInt(1, vehicleId);
-	                    int rowsAffected = updateWarehouseStmt.executeUpdate();
-
-	                    if (rowsAffected > 0) {
-	                        PreparedStatement checkWarehouseStmt = conn.prepareStatement(
-	                            "SELECT quantity FROM stock WHERE vehicle_id = ? AND location_type = 'warehouse'"
-	                        );
-	                        checkWarehouseStmt.setInt(1, vehicleId);
-	                        ResultSet rsWarehouse = checkWarehouseStmt.executeQuery();
-
-	                        if (rsWarehouse.next()) {
-	                            int warehouseQuantity = rsWarehouse.getInt("quantity");
-	                            if (warehouseQuantity == 0) {
-	                                PreparedStatement deleteWarehouseStmt = conn.prepareStatement(
-	                                    "DELETE FROM stock WHERE vehicle_id = ? AND location_type = 'warehouse'"
-	                                );
-	                                deleteWarehouseStmt.setInt(1, vehicleId);
-	                                deleteWarehouseStmt.executeUpdate();
-	                                System.out.println("Warehouse stoğunda araç kalmadı, kayıt silindi.");
-	                            }
-	                        }
-
-	                        PreparedStatement checkStmt = conn.prepareStatement(
-	                            "SELECT * FROM stock WHERE vehicle_id = ? AND location_type = 'dealer'"
-	                        );
-	                        checkStmt.setInt(1, vehicleId);
-	                        ResultSet rs = checkStmt.executeQuery();
-
-	                        if (rs.next()) {
-	                            PreparedStatement updateDealerStmt = conn.prepareStatement(
-	                                "UPDATE stock SET quantity = quantity + 1 WHERE vehicle_id = ? AND location_type = 'dealer'"
-	                            );
-	                            updateDealerStmt.setInt(1, vehicleId);
-	                            updateDealerStmt.executeUpdate();
-	                            JOptionPane.showMessageDialog(null, "Araç çekme başarılı.");
-	                            reloadVehicleData();
-	                        } 
-	                        else {
-	                            PreparedStatement insertDealerStmt = conn.prepareStatement(
-	                                "INSERT INTO stock (vehicle_id, location_type, quantity) VALUES (?, 'dealer', 1)"
-	                            );
-	                            insertDealerStmt.setInt(1, vehicleId);
-	                            insertDealerStmt.executeUpdate();
-	                            JOptionPane.showMessageDialog(null, "Araç çekme başarılı.");
-	                            reloadVehicleData();
-	                        }
-	                    } else {
-	                    	JOptionPane.showMessageDialog(null, "Araç çekme başarısız.");
-	                    }
-	                } catch (SQLException ex) {
-	                    ex.printStackTrace();
+	                boolean success = pullVehicleToDealerFromWarehouse(vehicleId);
+	                if (success) {
+	                    JOptionPane.showMessageDialog(null, "Araç çekme başarılı.");
+	                    reloadVehicleData();
+	                } else {
+	                    JOptionPane.showMessageDialog(null, "Araç çekme başarısız.");
 	                }
 	            }
 	        }
@@ -185,6 +135,62 @@ public class PullCarFromStockPage {
 	    returnButton.setBounds(30, 130, 100, 30);
 	    frame.getContentPane().add(returnButton);
 	    returnButton.setFocusable(false);
+	}
+	
+	public boolean pullVehicleToDealerFromWarehouse(int vehicleId) {
+        try {
+            PreparedStatement updateWarehouseStmt = conn.prepareStatement(
+                "UPDATE stock SET quantity = quantity - 1 WHERE vehicle_id = ? AND location_type = 'warehouse'"
+            );
+            updateWarehouseStmt.setInt(1, vehicleId);
+            int rowsAffected = updateWarehouseStmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                PreparedStatement checkWarehouseStmt = conn.prepareStatement(
+                    "SELECT quantity FROM stock WHERE vehicle_id = ? AND location_type = 'warehouse'"
+                );
+                checkWarehouseStmt.setInt(1, vehicleId);
+                ResultSet rsWarehouse = checkWarehouseStmt.executeQuery();
+
+                if (rsWarehouse.next()) {
+                    int warehouseQuantity = rsWarehouse.getInt("quantity");
+                    if (warehouseQuantity == 0) {
+                        PreparedStatement deleteWarehouseStmt = conn.prepareStatement(
+                            "DELETE FROM stock WHERE vehicle_id = ? AND location_type = 'warehouse'"
+                        );
+                        deleteWarehouseStmt.setInt(1, vehicleId);
+                        deleteWarehouseStmt.executeUpdate();
+                    }
+                }
+
+                PreparedStatement checkStmt = conn.prepareStatement(
+                    "SELECT * FROM stock WHERE vehicle_id = ? AND location_type = 'dealer'"
+                );
+                checkStmt.setInt(1, vehicleId);
+                ResultSet rs = checkStmt.executeQuery();
+
+                if (rs.next()) {
+                    PreparedStatement updateDealerStmt = conn.prepareStatement(
+                        "UPDATE stock SET quantity = quantity + 1 WHERE vehicle_id = ? AND location_type = 'dealer'"
+                    );
+                    updateDealerStmt.setInt(1, vehicleId);
+                    updateDealerStmt.executeUpdate();
+                    return true;
+                } 
+                else {
+                    PreparedStatement insertDealerStmt = conn.prepareStatement(
+                        "INSERT INTO stock (vehicle_id, location_type, quantity) VALUES (?, 'dealer', 1)"
+                    );
+                    insertDealerStmt.setInt(1, vehicleId);
+                    insertDealerStmt.executeUpdate();
+                    return true;
+                }
+            } else {
+            	return false;
+            }
+        } catch (SQLException ex) {
+        	return false;
+        }
 	}
 
 	private void reloadVehicleData() {
