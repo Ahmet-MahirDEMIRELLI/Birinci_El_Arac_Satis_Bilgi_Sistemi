@@ -31,6 +31,9 @@ public class AddCarToStockPage {
 	private JTextField brandField;
 	private JTextField modelField;
 	private JTextField packageField;
+	private JSpinner yearSpinner;
+	private JSpinner priceSpinner;
+	private JSpinner quantitySpinner;
 	
 	private JLabel tipLabel;
 	private JLabel brandLabel;
@@ -38,6 +41,7 @@ public class AddCarToStockPage {
 	private JLabel yearLabel;
 	private JLabel packageLabel;
 	private JLabel priceLabel;
+	private JLabel quantityLabel;
 
 	/**
 	 * Launch the application.
@@ -105,7 +109,7 @@ public class AddCarToStockPage {
 		
 		LocalDate now = LocalDate.now();
 		SpinnerNumberModel yearModel = new SpinnerNumberModel(now.getYear(), 1900, now.getYear() + 1, 1);
-		JSpinner yearSpinner = new JSpinner(yearModel);
+		yearSpinner = new JSpinner(yearModel);
 		JSpinner.NumberEditor editor = new JSpinner.NumberEditor(yearSpinner, "#");
 		yearSpinner.setEditor(editor);
 		yearSpinner.setBounds(30, 130, 125, 25);
@@ -124,8 +128,8 @@ public class AddCarToStockPage {
 		packageLabel.setBounds(230, 110, 100, 15);
 		frame.getContentPane().add(packageLabel);
 
-		SpinnerNumberModel priceModel = new SpinnerNumberModel(1000000.00, 0.01, 100000000.00, 1000); // min: 0.00, max: 1,000,000.00, step: 0.01
-		JSpinner priceSpinner = new JSpinner(priceModel);
+		SpinnerNumberModel priceModel = new SpinnerNumberModel(1000000.00, 0.01, 100000000.00, 1000);
+		priceSpinner = new JSpinner(priceModel);
 		JSpinner.NumberEditor priceEditor = new JSpinner.NumberEditor(priceSpinner, "0.00");
 		priceSpinner.setEditor(priceEditor);
 		priceSpinner.setBounds(30, 190, 125, 25);
@@ -134,41 +138,36 @@ public class AddCarToStockPage {
 		priceLabel.setFont(new Font("Tahoma", Font.BOLD, 16));
 		priceLabel.setBounds(30, 170, 100, 15);
 		frame.getContentPane().add(priceLabel);
+		
+		SpinnerNumberModel quantityModel = new SpinnerNumberModel(1, 1, 100, 1);
+		quantitySpinner = new JSpinner(quantityModel);
+		quantitySpinner.setBounds(230, 190, 125, 25);
+		frame.getContentPane().add(quantitySpinner);
+		quantityLabel = new JLabel("Adet:");
+		quantityLabel.setFont(new Font("Tahoma", Font.BOLD, 16));
+		quantityLabel.setBounds(230, 170, 100, 15);
+		frame.getContentPane().add(quantityLabel);
 
 		JButton addButton = new JButton("Ekle");
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String query = "SELECT add_vehicle(?,?,?,?,?);";
-				PreparedStatement statement;
-				try {
-					if (brandField.getText().length() <= 50 && modelField.getText().length() <= 50 && packageField.getText().length() <= 50) {
-						BigDecimal price = BigDecimal.valueOf((double) priceSpinner.getValue());
-						statement = conn.prepareStatement(query);
-						statement.setString(1, brandField.getText());
-						statement.setString(2, modelField.getText());
-						statement.setInt(3, (int) yearSpinner.getValue());
-						statement.setString(4, packageField.getText());
-						statement.setBigDecimal(5, price);
-						
-						ResultSet r = statement.executeQuery();
-						r.next();
-						if (r.getBoolean(1)) {
-							JOptionPane.showMessageDialog(null, "Ekleme başarılı.");
-						} 
-						else {
-							JOptionPane.showMessageDialog(null, "Bu araç zaten eklenmiş.");
-						}
-					} else {
-						JOptionPane.showMessageDialog(null, "50 karakterden uzun veri girilemez.");
-					}
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				int result = addCarToStock();
+                if (result == 1) {
+                    JOptionPane.showMessageDialog(null, "Araç ekleme başarılı.");
+                } 
+                else if(result == 0){
+                    JOptionPane.showMessageDialog(null, "Araç zaten ekli.");
+                }
+                else if(result == -1){
+                	JOptionPane.showMessageDialog(null, "50 karakterden uzun veri girilemez.");
+                }
+                else {
+                	JOptionPane.showMessageDialog(null, "Beklenmeyen bir hata oluştu");
+                }
 			}
 		});
 		addButton.setFont(new Font("Tahoma", Font.BOLD, 18));
-		addButton.setBounds(230, 190, 125, 25);
+		addButton.setBounds(30, 250, 125, 25);
 		frame.getContentPane().add(addButton);
 		addButton.setFocusable(false);
 
@@ -181,9 +180,40 @@ public class AddCarToStockPage {
 			}
 		});
 		returnButton.setFont(new Font("Tahoma", Font.BOLD, 18));
-		returnButton.setBounds(120, 250, 125, 25);
+		returnButton.setBounds(230, 250, 125, 25);
 		frame.getContentPane().add(returnButton);
 		returnButton.setFocusable(false);
+	}
+	
+	public int addCarToStock() {
+		String query = "SELECT add_vehicle(?,?,?,?,?,?);";
+		PreparedStatement statement;
+		try {
+			if (brandField.getText().length() <= 50 && modelField.getText().length() <= 50 && packageField.getText().length() <= 50) {
+				BigDecimal price = BigDecimal.valueOf((double) priceSpinner.getValue());
+				statement = conn.prepareStatement(query);
+				statement.setString(1, brandField.getText());
+				statement.setString(2, modelField.getText());
+				statement.setInt(3, (int) yearSpinner.getValue());
+				statement.setString(4, packageField.getText());
+				statement.setBigDecimal(5, price);
+				statement.setInt(6, (int) quantitySpinner.getValue());
+				
+				ResultSet r = statement.executeQuery();
+				r.next();
+				if (r.getBoolean(1)) {
+					return 1;
+				} 
+				else {
+					return 0;
+				}
+			} else {
+				return -1;
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return -2;
+		}
 	}
 
 	public void showFrame() {

@@ -151,7 +151,8 @@ CREATE OR REPLACE FUNCTION add_vehicle(
     p_model VARCHAR(50),
     p_year INT,
     p_package VARCHAR(50),
-    p_price NUMERIC(12, 2)
+    p_price NUMERIC(12, 2),
+	p_quantity INT
 )
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -182,7 +183,7 @@ BEGIN
 			vehicle_id, location_type, quantity
 		)
 		VALUES (
-			new_vehicle_id, 'warehouse', 1
+			new_vehicle_id, 'warehouse', p_quantity
 		);
         RETURN TRUE;
     ELSE
