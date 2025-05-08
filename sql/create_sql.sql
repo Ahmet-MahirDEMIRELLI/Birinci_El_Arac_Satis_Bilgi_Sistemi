@@ -71,6 +71,7 @@ CREATE TABLE requests (
     vehicle_id INT REFERENCES vehicle(vehicle_id),
     request_date DATE NOT NULL,
     status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected'))
+    price NUMERIC(10, 2) CHECK ((request_type = 'price_offer' AND price IS NOT NULL) OR (request_type = 'test_drive' AND price IS NULL))
 );
 
 CREATE OR REPLACE FUNCTION register_customer(
