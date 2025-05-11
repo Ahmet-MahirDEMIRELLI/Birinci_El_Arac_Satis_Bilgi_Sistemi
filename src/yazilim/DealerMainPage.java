@@ -56,39 +56,61 @@ public class DealerMainPage {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setTitle("Bayi Ana Sayfası");
-		frame.setBounds(100, 100, 450, 230);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
-		
-		JButton getFromStockButton = new JButton("Stoktan Araç Çek");
-		getFromStockButton.setFocusable(false);
-		getFromStockButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);
-				PullCarFromStockPage pullCarFromStockPage = new PullCarFromStockPage(dealerId, conn);
-				pullCarFromStockPage.showFrame();
-			}
-		});
-		getFromStockButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-		getFromStockButton.setBounds(150, 30, 200, 30);
-		frame.getContentPane().add(getFromStockButton);
-		
-		JButton returnButton = new JButton("Çıkış Yap");
-		returnButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				StartPage start_page;
-				start_page = new StartPage(conn);
-				start_page.showFrame();
-				frame.setVisible(false);
-			}
-		});
-		returnButton.setFont(new Font("Tahoma", Font.BOLD, 18));
-		returnButton.setBounds(30, 30, 100, 30);
-		frame.getContentPane().add(returnButton);
-		returnButton.setFocusable(false);
+	    frame = new JFrame();
+	    frame.setTitle("Bayi Ana Sayfası");
+	    frame.setBounds(100, 100, 500, 350);
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    frame.getContentPane().setLayout(null);
+
+	    int buttonWidth = 220;
+	    int buttonHeight = 40;
+	    int buttonX = (frame.getWidth() - buttonWidth) / 2 - 8;
+	    int y = 30;
+
+	    JButton showRequestsButton = new JButton("Talepleri Göster");
+	    showRequestsButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+	    showRequestsButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
+	    showRequestsButton.setFocusable(false);
+	    showRequestsButton.addActionListener(e -> new DealerRequestPage(conn, dealerId));
+	    frame.getContentPane().add(showRequestsButton);
+
+	    y += 60;
+
+	    JButton getFromStockButton = new JButton("Stoktan Araç Çek");
+	    getFromStockButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
+	    getFromStockButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+	    getFromStockButton.setFocusable(false);
+	    getFromStockButton.addActionListener(e -> {
+	        frame.setVisible(false);
+	        PullCarFromStockPage pullCarFromStockPage = new PullCarFromStockPage(dealerId, conn);
+	        pullCarFromStockPage.showFrame();
+	    });
+	    frame.getContentPane().add(getFromStockButton);
+
+	    y += 60;
+
+	    JButton changePasswordButton = new JButton("Şifre Değiştir");
+	    changePasswordButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
+	    changePasswordButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+	    changePasswordButton.setFocusable(false);
+	    changePasswordButton.addActionListener(e -> new DealerChangePassword(conn, dealerId));
+	    frame.getContentPane().add(changePasswordButton);
+
+	    y += 60;
+
+	    JButton returnButton = new JButton("Çıkış Yap");
+	    returnButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
+	    returnButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+	    returnButton.setFocusable(false);
+	    returnButton.addActionListener(e -> {
+	        StartPage start_page = new StartPage(conn);
+	        start_page.showFrame();
+	        frame.setVisible(false);
+	    });
+	    frame.getContentPane().add(returnButton);
 	}
+
+
 
 	public void showFrame() {
 		frame.setVisible(true);
