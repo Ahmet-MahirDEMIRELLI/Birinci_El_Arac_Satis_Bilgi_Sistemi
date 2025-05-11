@@ -1,0 +1,186 @@
+package yazilim;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+import java.time.LocalDate;
+
+public class OrderRequestPage {
+    private JFrame frame;
+    private JComboBox<String> vehicleCombo;
+    private int userId;
+    private Connection conn;
+
+    public OrderRequestPage(int userId, Connection conn) {
+        this.userId = userId;
+        this.conn = conn;
+
+        if (!hasAnyPriceOffer()) {
+            initializeNoOffersPage();
+        } else {
+            initialize();
+        }
+    }
+
+    private boolean hasAnyPriceOffer() {
+        String query = "SELECT COUNT(*) AS offer_count FROM price_offers WHERE user_id = ?";
+        try {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt("offer_count") > 0) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Teklif kontrolü sırasında hata oluştu.");
+        }
+        return false;
+    }
+
+    private void initialize() {
+        frame = new JFrame("Sipariş Ver");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setBounds(100, 100, 600, 300);
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+
+        JLabel titleLabel = new JLabel("Sipariş Vermek İstediğiniz Araç:");
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        frame.add(Box.createRigidArea(new Dimension(0, 30)));
+        frame.add(titleLabel);
+
+        vehicleCombo = new JComboBox<>();
+        vehicleCombo.setMaximumSize(new Dimension(500, 30));
+        vehicleCombo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        frame.add(Box.createRigidArea(new Dimension(0, 10)));
+        frame.add(vehicleCombo);
+        loadEligibleVehicles();
+
+        JButton orderButton = new JButton("Sipariş Ver");
+        orderButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        orderButton.setFocusable(false);
+        orderButton.setPreferredSize(new Dimension(160, 40));
+        frame.add(Box.createRigidArea(new Dimension(0, 20)));
+        frame.add(orderButton);
+
+        orderButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedVehicle = (String) vehicleCombo.getSelectedItem();
+                if (selectedVehicle != null) {
+                    try {
+                        int vehicleId = Integer.parseInt(selectedVehicle.split("-")[0].trim());
+
+                        String offerDateQuery = "SELECT offer_date FROM price_offers WHERE user_id = ? AND vehicle_id = ?";
+                        PreparedStatement dateStmt = conn.prepareStatement(offerDateQuery);
+                        dateStmt.setInt(1, userId);
+                        dateStmt.setInt(2, vehicleId);
+                        ResultSet dateRs = dateStmt.executeQuery();
+
+                        if (dateRs.next()) {
+                            LocalDate offerDate = dateRs.getDate("offer_date").toLocalDate();
+                            if (offerDate.isBefore(LocalDate.now().minusDays(30))) {
+                                JOptionPane.showMessageDialog(frame, "Bu teklifin süresi dolmuş. Lütfen yeni teklif isteyin.");
+                                return;
+                            }
+                        }
+
+                        OrderRequest request = new OrderRequest(userId, vehicleId, LocalDate.now(), conn);
+                        if (request.processRequest(userId, vehicleId, LocalDate.now())) {
+                            JOptionPane.showMessageDialog(frame, "Sipariş başarıyla gönderildi.");
+                        } else {
+                            JOptionPane.showMessageDialog(frame, "Sipariş gönderilemedi.");
+                        }
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(frame, "Araç bilgisi okunamadı.");
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(frame, "Sipariş işlemi sırasında hata oluştu.");
+                    }
+                }
+            }
+        });
+
+        JButton backButton = new JButton("Geri");
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setFocusable(false);
+        frame.add(Box.createRigidArea(new Dimension(0, 20)));
+        frame.add(backButton);
+
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                CustomerMainPage mainPage = new CustomerMainPage(userId, conn);
+                mainPage.showFrame();
+            }
+        });
+    }
+
+    private void initializeNoOffersPage() {
+        frame = new JFrame("Sipariş Ver");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setBounds(100, 100, 450, 200);
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+
+        JLabel noOffersLabel = new JLabel("Hiçbir araç için fiyat teklifiniz bulunmamaktadır.");
+        noOffersLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        frame.add(Box.createRigidArea(new Dimension(0, 40)));
+        frame.add(noOffersLabel);
+
+        JButton backButton = new JButton("Geri");
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setFocusable(false);
+        frame.add(Box.createRigidArea(new Dimension(0, 30)));
+        frame.add(backButton);
+
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                CustomerMainPage mainPage = new CustomerMainPage(userId, conn);
+                mainPage.showFrame();
+            }
+        });
+    }
+
+    private void loadEligibleVehicles() {
+        try {
+            String query = """
+                SELECT DISTINCT v.vehicle_id, v.brand, v.model, v.year, p.offered_price, p.offer_date
+                FROM vehicle v
+                JOIN price_offers p ON v.vehicle_id = p.vehicle_id
+                WHERE p.user_id = ?
+            """;
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, userId); 
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("vehicle_id");
+                String brand = rs.getString("brand");
+                String model = rs.getString("model");
+                int year = rs.getInt("year");
+                double price = rs.getDouble("offered_price"); 
+                LocalDate offerDate = rs.getDate("offer_date").toLocalDate();
+
+                String formattedPrice = String.format("%.2f", price);
+                String baseText = id + " - " + brand + " " + model + " (" + year + ")  " + formattedPrice + " TL";
+
+                String displayText = offerDate.isBefore(LocalDate.now().minusDays(30))
+                        ? baseText + " [SÜRESİ DOLMUŞ]"
+                        : baseText;
+
+                vehicleCombo.addItem(displayText);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(frame, "Araç bilgileri yüklenemedi.");
+        }
+    }
+
+    public void showFrame() {
+        if (frame != null) {
+            frame.setVisible(true);
+        }
+    }
+}
+

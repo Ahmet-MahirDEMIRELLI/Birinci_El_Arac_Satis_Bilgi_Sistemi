@@ -1,10 +1,7 @@
 package yazilim;
 
 import javax.swing.*;
-
-import yazilim.requests.TestDriveRequest;
-
-import java.awt.EventQueue;
+import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.time.LocalDate;
@@ -13,24 +10,7 @@ public class TestDriveRequestPage {
     private JFrame frame;
     private JComboBox<String> vehicleCombo;
     private int userId;
-    private static Connection conn;
-    
-    /**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-					TestDriveRequestPage window = new TestDriveRequestPage(1, conn);
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+    private Connection conn;
 
     public TestDriveRequestPage(int userId, Connection conn) {
         this.userId = userId;
@@ -40,25 +20,28 @@ public class TestDriveRequestPage {
 
     private void initialize() {
         frame = new JFrame("Test Sürüşü Talebi");
-        frame.setBounds(100, 100, 450, 250);
-        frame.getContentPane().setLayout(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setBounds(100, 100, 500, 250);
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 
-        JLabel label = new JLabel("Araç Seçin:");
-        label.setBounds(30, 30, 100, 25);
-        frame.getContentPane().add(label);
+        JLabel titleLabel = new JLabel("Test Sürüşü Talep Etmek İstediğiniz Araç:");
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        frame.add(Box.createRigidArea(new Dimension(0, 30))); // Üst boşluk
+        frame.add(titleLabel);
 
         vehicleCombo = new JComboBox<>();
-        vehicleCombo.setBounds(140, 30, 250, 25);
-        frame.getContentPane().add(vehicleCombo);
+        vehicleCombo.setMaximumSize(new Dimension(350, 30));  
+        vehicleCombo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        frame.add(Box.createRigidArea(new Dimension(0, 10))); 
+        frame.add(vehicleCombo);
         loadVehicles();
-        
-        int vehicleWidth = 250;
-        int vehicleLabelStart = 140;
 
         JButton submitButton = new JButton("Test Sürüşü Talep Et");
+        submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitButton.setFocusable(false);
-        submitButton.setBounds(vehicleLabelStart+(vehicleWidth-170)/2, 80, 170, 30);
-        frame.getContentPane().add(submitButton);
+        submitButton.setPreferredSize(new Dimension(170, 40));
+        frame.add(Box.createRigidArea(new Dimension(0, 20)));
+        frame.add(submitButton);
 
         submitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -71,7 +54,6 @@ public class TestDriveRequestPage {
                         TestDriveRequest request = new TestDriveRequest(userId, vehicleId, requestDate, conn);
                         if (request.processRequest(userId, vehicleId, requestDate)) {
                             JOptionPane.showMessageDialog(frame, "Test sürüşü talebi başarıyla gönderildi.");
-                            frame.dispose();
                         } else {
                             JOptionPane.showMessageDialog(frame, "Test sürüşü talebi gönderilemedi.");
                         }
@@ -81,15 +63,17 @@ public class TestDriveRequestPage {
                 }
             }
         });
-        
+
         JButton backButton = new JButton("Geri");
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         backButton.setFocusable(false);
-        backButton.setBounds(30, 150, 100, 30);
-        frame.getContentPane().add(backButton);
+        frame.add(Box.createRigidArea(new Dimension(0, 20)));
+        frame.add(backButton);
+
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); 
-                CustomerMainPage mainPage = new CustomerMainPage(userId, conn); // Ana sayfaya dön
+                CustomerMainPage mainPage = new CustomerMainPage(userId, conn);
                 mainPage.showFrame();
             }
         });
@@ -109,6 +93,7 @@ public class TestDriveRequestPage {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(frame, "Araç bilgileri yüklenemedi. Lütfen tekrar deneyin.");
         }
     }
 
@@ -116,4 +101,5 @@ public class TestDriveRequestPage {
         frame.setVisible(true);
     }
 }
+
 

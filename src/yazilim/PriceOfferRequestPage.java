@@ -1,10 +1,7 @@
 package yazilim;
 
 import javax.swing.*;
-
-import yazilim.requests.PriceOfferRequest;
-
-import java.awt.EventQueue;
+import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.time.LocalDate;
@@ -13,24 +10,7 @@ public class PriceOfferRequestPage {
     private JFrame frame;
     private JComboBox<String> vehicleCombo;
     private int userId;
-    private static Connection conn;
-    
-    /**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-					PriceOfferRequestPage window = new PriceOfferRequestPage(1, conn);
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+    private Connection conn;
 
     public PriceOfferRequestPage(int userId, Connection conn) {
         this.userId = userId;
@@ -40,27 +20,28 @@ public class PriceOfferRequestPage {
 
     private void initialize() {
         frame = new JFrame("Fiyat Teklifi İste");
-        frame.setBounds(100, 100, 450, 250);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.getContentPane().setLayout(null);
+        frame.setBounds(100, 100, 500, 250);
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 
-        JLabel label = new JLabel("Araç Seçin:");
-        label.setBounds(30, 30, 100, 25);
-        frame.getContentPane().add(label);
+        JLabel titleLabel = new JLabel("Fiyat Teklifi Almak İstediğiniz Araç:");
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        frame.add(Box.createRigidArea(new Dimension(0, 30)));
+        frame.add(titleLabel);
 
-        //Araç Seçimi
         vehicleCombo = new JComboBox<>();
-        vehicleCombo.setBounds(140, 30, 250, 25);
-        frame.getContentPane().add(vehicleCombo);
-        loadVehicles();  // Araçları yükle
-        
-        int vehicleWidth = 250;
-        int vehicleLabelStart = 140;
-
+        vehicleCombo.setMaximumSize(new Dimension(350, 30));  
+        vehicleCombo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        frame.add(Box.createRigidArea(new Dimension(0, 10))); 
+        frame.add(vehicleCombo);
+        loadVehicles();  
+      
         JButton submitButton = new JButton("Fiyat Teklifi Al");
+        submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitButton.setFocusable(false);
-        submitButton.setBounds(vehicleLabelStart+(vehicleWidth-120)/2, 80, 120, 30);
-        frame.getContentPane().add(submitButton);
+        submitButton.setPreferredSize(new Dimension(160, 40));
+        frame.add(Box.createRigidArea(new Dimension(0, 20)));
+        frame.add(submitButton);
 
         submitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -71,7 +52,6 @@ public class PriceOfferRequestPage {
                         PriceOfferRequest request = new PriceOfferRequest(userId, vehicleId, LocalDate.now(), conn);
                         if (request.processRequest(userId, vehicleId, LocalDate.now())) {
                             JOptionPane.showMessageDialog(frame, "Teklif isteği başarıyla gönderildi.");
-                            frame.dispose();  
                         } else {
                             JOptionPane.showMessageDialog(frame, "İstek gönderilemedi.");
                         }
@@ -81,11 +61,13 @@ public class PriceOfferRequestPage {
                 }
             }
         });
-        
+
+        // Geri Butonu
         JButton backButton = new JButton("Geri");
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         backButton.setFocusable(false);
-        backButton.setBounds(30, 150, 100, 30);
-        frame.getContentPane().add(backButton);
+        frame.add(Box.createRigidArea(new Dimension(0, 20)));
+        frame.add(backButton);
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); 
@@ -113,9 +95,9 @@ public class PriceOfferRequestPage {
         }
     }
 
-    // Frame'i göster
     public void showFrame() {
         frame.setVisible(true);
     }
 }
+
 

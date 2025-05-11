@@ -26,9 +26,9 @@ public class CustomerMainPage {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
+				Connection dummyConn = null;
 				try {
-					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-					CustomerMainPage window = new CustomerMainPage(1, conn);
+					CustomerMainPage window = new CustomerMainPage(1, dummyConn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -38,7 +38,7 @@ public class CustomerMainPage {
 	}
 	
 	public CustomerMainPage() throws SQLException {
-		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
+		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "password");
 		usrId = 1;
 		initialize();
 	}
@@ -55,73 +55,122 @@ public class CustomerMainPage {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	
 	private void initialize() {
-	    frame = new JFrame();
-	    frame.setTitle("Müşteri Ana Sayfası");
-	    frame.setBounds(100, 100, 500, 320);
-	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    frame.getContentPane().setLayout(null);
-
-	    int buttonWidth = 200;
-	    int buttonHeight = 40;
-	    int buttonX = (frame.getWidth() - buttonWidth) / 2;
-
-	    JButton offerButton = new JButton("Fiyat Teklifi Al");
-	    offerButton.setBounds(buttonX, 30, buttonWidth, buttonHeight);
-	    offerButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-	    offerButton.setFocusable(false);
-	    offerButton.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent e) {
-	            frame.setVisible(false);
-	            PriceOfferRequestPage offerPage = new PriceOfferRequestPage(usrId, conn);
-	            offerPage.showFrame();
-	        }
-	    });
-	    frame.getContentPane().add(offerButton);
-
-	    JButton testDriveButton = new JButton("Test Sürüşü Talep Et");
-	    testDriveButton.setBounds(buttonX, 80, buttonWidth, buttonHeight);
-	    testDriveButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-	    testDriveButton.setFocusable(false);
-	    testDriveButton.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent e) {
-	            frame.setVisible(false);
-	            TestDriveRequestPage testDrivePage = new TestDriveRequestPage(usrId, conn);
-	            testDrivePage.showFrame();
-	        }
-	    });
-	    frame.getContentPane().add(testDriveButton);
-
-	    JButton changePasswordButton = new JButton("Şifre Değiştir");
-	    changePasswordButton.setBounds(buttonX, 130, buttonWidth, buttonHeight);
-	    changePasswordButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-	    changePasswordButton.setFocusable(false);
-	    changePasswordButton.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent e) {
-	            new CustomerChangePassword(conn, usrId);
-	        }
-	    });
-	    frame.getContentPane().add(changePasswordButton);
-
-	    JButton returnButton = new JButton("Çıkış Yap");
-	    returnButton.setBounds(buttonX, 180, buttonWidth, buttonHeight);
-	    returnButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-	    returnButton.setFocusable(false);
-	    returnButton.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent e) {
-	            StartPage start_page = new StartPage(conn);
-	            start_page.showFrame();
-	            frame.setVisible(false);
-	        }
-	    });
-	    frame.getContentPane().add(returnButton);
+		frame = new JFrame();
+		frame.setTitle("Müşteri Ana Sayfası");
+		frame.setBounds(100, 100, 650, 320);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JButton offerButton = new JButton("Fiyat Teklifi Al");
+		offerButton.setFocusable(false);
+		offerButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				PriceOfferRequestPage offerPage = new PriceOfferRequestPage(usrId, conn);
+				offerPage.showFrame();
+			}
+		});
+		offerButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		offerButton.setBounds(100, 30, 200, 30);
+		frame.getContentPane().add(offerButton);
+		
+		
+		JButton offerStatusButton = new JButton("Fiyat Tekliflerim");
+		offerStatusButton.setFocusable(false);
+		offerStatusButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				PriceOfferStatusPage offerStatusPage = new PriceOfferStatusPage(usrId, conn);
+				offerStatusPage.showFrame();
+			}
+		});
+		offerStatusButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		offerStatusButton.setBounds(350, 30, 200, 30);
+		frame.getContentPane().add(offerStatusButton);
+		
+		
+		JButton testDriveButton = new JButton("Test Sürüşü Talep Et");
+		testDriveButton.setFocusable(false);
+		testDriveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				TestDriveRequestPage testDrivePage = new TestDriveRequestPage(usrId, conn);
+				testDrivePage.showFrame();
+			}
+		});
+		testDriveButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		testDriveButton.setBounds(100, 80, 200, 30);
+		frame.getContentPane().add(testDriveButton);
+		
+		JButton testDriveStatusButton = new JButton("Test Sürüşlerim");
+		testDriveStatusButton.setFocusable(false);
+		testDriveStatusButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				TestDriveStatusPage testDriveStatusPage = new TestDriveStatusPage(usrId, conn);
+				testDriveStatusPage.showFrame();
+			}
+		});
+		testDriveStatusButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		testDriveStatusButton.setBounds(350, 80, 200, 30);
+		frame.getContentPane().add(testDriveStatusButton);
+		
+		JButton orderButton = new JButton("Sipariş Ver");
+		orderButton.setFocusable(false);
+		orderButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				OrderRequestPage orderRequestPage = new OrderRequestPage(usrId, conn);
+				orderRequestPage.showFrame();
+			}
+		});
+		orderButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		orderButton.setBounds(100, 130, 200, 30);
+		frame.getContentPane().add(orderButton);
+		
+		JButton orderStatusButton = new JButton("Sipariş Durumlarım");
+		orderStatusButton.setFocusable(false);
+		orderStatusButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				OrderStatusPage orderStatusPage = new OrderStatusPage(usrId, conn);
+				orderStatusPage.showFrame();
+			}
+		});
+		orderStatusButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		orderStatusButton.setBounds(350, 130, 200, 30);
+		frame.getContentPane().add(orderStatusButton);
+		
+		JButton myCarsButton = new JButton("Arabalarım");
+		myCarsButton.setFocusable(false);
+		myCarsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				CustomerCarPage customerCarPage = new CustomerCarPage(usrId, conn);
+				customerCarPage.showFrame();
+			}
+		});
+		myCarsButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		myCarsButton.setBounds(225, 180, 200, 30);
+		frame.getContentPane().add(myCarsButton);
+		
+		JButton returnButton = new JButton("Çıkış Yap");
+		returnButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				StartPage start_page;
+				start_page = new StartPage(conn);
+				start_page.showFrame();
+				frame.setVisible(false);
+			}
+		});
+		returnButton.setFont(new Font("Tahoma", Font.BOLD, 18));
+		returnButton.setBounds(225, 230, 200, 30);
+		frame.getContentPane().add(returnButton);
+		returnButton.setFocusable(false);
+		
 	}
 
-	
-	
-	
-	
 	public void showFrame() {
 		frame.setVisible(true);
 	}
