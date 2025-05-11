@@ -56,38 +56,57 @@ public class WarehouseMainPage {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setTitle("Depo Ana Sayfası");
-		frame.setBounds(100, 100, 300, 230);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
-		
-		JButton newCarButton = new JButton("Yeni Araç Ekle");
-		newCarButton.setFocusable(false);
-		newCarButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);
-				AddCarToStockPage addCarToStockPage = new AddCarToStockPage(warehouseId, conn);
-				addCarToStockPage.showFrame();
-			}
-		});
-		newCarButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-		newCarButton.setBounds(45, 30, 200, 30);
-		frame.getContentPane().add(newCarButton);
-		
-		JButton returnButton = new JButton("Çıkış Yap");
-		returnButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				StartPage start_page;
-				start_page = new StartPage(conn);
-				start_page.showFrame();
-				frame.setVisible(false);
-			}
-		});
-		returnButton.setFont(new Font("Tahoma", Font.BOLD, 18));
-		returnButton.setBounds(45, 70, 200, 30);
-		frame.getContentPane().add(returnButton);
-		returnButton.setFocusable(false);
+	    frame = new JFrame();
+	    frame.setTitle("Depo Ana Sayfası");
+	    frame.setBounds(100, 100, 500, 300);
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    frame.getContentPane().setLayout(null);
+
+	    int buttonWidth = 220;
+	    int buttonHeight = 40;
+	    int buttonX = (frame.getWidth() - buttonWidth) / 2 - 8;
+	    int y = 30;
+
+	    JButton newCarButton = new JButton("Yeni Araç Ekle");
+	    newCarButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
+	    newCarButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+	    newCarButton.setFocusable(false);
+	    newCarButton.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            frame.setVisible(false);
+	            AddCarToStockPage addCarToStockPage = new AddCarToStockPage(warehouseId, conn);
+	            addCarToStockPage.showFrame();
+	        }
+	    });
+	    frame.getContentPane().add(newCarButton);
+
+	    y += 60;
+
+	    JButton changePasswordButton = new JButton("Şifre Değiştir");
+	    changePasswordButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
+	    changePasswordButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+	    changePasswordButton.setFocusable(false);
+	    changePasswordButton.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            new WarehouseChangePassword(conn, warehouseId);
+	        }
+	    });
+	    frame.getContentPane().add(changePasswordButton);
+
+	    y += 60;
+
+	    JButton returnButton = new JButton("Çıkış Yap");
+	    returnButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
+	    returnButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+	    returnButton.setFocusable(false);
+	    returnButton.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            StartPage start_page = new StartPage(conn);
+	            start_page.showFrame();
+	            frame.setVisible(false);
+	        }
+	    });
+	    frame.getContentPane().add(returnButton);
 	}
 
 	public void showFrame() {
