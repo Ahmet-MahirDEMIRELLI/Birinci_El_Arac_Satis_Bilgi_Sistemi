@@ -1,5 +1,7 @@
 package yazilim;
 
+import yazilim.requests.OrderRequest;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
