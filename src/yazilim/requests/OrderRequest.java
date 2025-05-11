@@ -11,6 +11,8 @@ public class OrderRequest extends CustomerRequest{
 	
 	public OrderRequest(int userId, int vehicleId, LocalDate requestDate, Connection conn) {
 		super(userId, vehicleId, requestDate);
+		// TODO Auto-generated constructor stub
+		this.conn = conn;
 	}
 
 	@Override
