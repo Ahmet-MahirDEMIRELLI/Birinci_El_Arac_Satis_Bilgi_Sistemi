@@ -1,5 +1,7 @@
 package yazilim;
 
+import yazilim.requests.PriceOfferRequest;
+
 import java.awt.BorderLayout;
 import java.sql.Connection;
 import java.sql.Date;
