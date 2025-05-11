@@ -1,7 +1,5 @@
 package yazilim;
 
-import yazilim.requests.OrderRequest;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -10,8 +8,25 @@ import java.sql.*;
 public class OrderStatusPage {
     private JFrame frame;
     private JTable table;
-    private Connection conn;
     private int userId;
+	private static Connection conn;
+	    
+	    /**
+		 * Launch the application.
+		 */
+		public static void main(String[] args) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
+						OrderStatusPage window = new OrderStatusPage(1, conn);
+						window.frame.setVisible(true);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}
 
     public OrderStatusPage(int userId, Connection conn) {
         this.userId = userId;

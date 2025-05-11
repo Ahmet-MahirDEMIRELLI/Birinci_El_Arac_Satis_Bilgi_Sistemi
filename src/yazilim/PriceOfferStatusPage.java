@@ -1,10 +1,10 @@
 package yazilim;
 
-import yazilim.requests.PriceOfferRequest;
-
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,8 +19,25 @@ import javax.swing.table.DefaultTableModel;
 public class PriceOfferStatusPage {
     private JFrame frame;
     private JTable table;
-    private Connection conn;
     private int userId;
+	private static Connection conn;
+	    
+	    /**
+		 * Launch the application.
+		 */
+		public static void main(String[] args) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
+						PriceOfferStatusPage window = new PriceOfferStatusPage(1, conn);
+						window.frame.setVisible(true);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}
 
     public PriceOfferStatusPage(int userId, Connection conn) {
         this.userId = userId;

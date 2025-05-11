@@ -1,10 +1,10 @@
 package yazilim;
 
-import yazilim.requests.TestDriveRequest;
-
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,8 +19,25 @@ import javax.swing.table.DefaultTableModel;
 public class TestDriveStatusPage {
 	private JFrame frame;
     private JTable table;
-    private Connection conn;
     private int userId;
+	private static Connection conn;
+	    
+	    /**
+		 * Launch the application.
+		 */
+		public static void main(String[] args) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
+						TestDriveStatusPage window = new TestDriveStatusPage(1, conn);
+						window.frame.setVisible(true);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}
 
     public TestDriveStatusPage(int userId, Connection conn) {
         this.userId = userId;

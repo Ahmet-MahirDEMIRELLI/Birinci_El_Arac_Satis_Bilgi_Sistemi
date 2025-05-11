@@ -1,7 +1,5 @@
 package yazilim;
 
-import yazilim.requests.OrderRequest;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -12,7 +10,25 @@ public class OrderRequestPage {
     private JFrame frame;
     private JComboBox<String> vehicleCombo;
     private int userId;
-    private Connection conn;
+	private static Connection conn;
+	    
+	    /**
+		 * Launch the application.
+		 */
+		public static void main(String[] args) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
+						OrderRequestPage window = new OrderRequestPage(1, conn);
+						window.frame.setVisible(true);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}
+
 
     public OrderRequestPage(int userId, Connection conn) {
         this.userId = userId;
