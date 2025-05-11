@@ -191,3 +191,22 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+ALTER TABLE requests DROP CONSTRAINT requests_status_check;
+
+
+ALTER TABLE requests ADD CONSTRAINT requests_status_check
+CHECK (status IN ('pending', 'accepted', 'rejected'));
+
+
+
+ALTER TABLE requests DROP CONSTRAINT requests_check;
+
+ALTER TABLE requests ADD CONSTRAINT requests_check
+CHECK (
+  (request_type = 'price_offer')
+  OR
+  (request_type = 'test_drive' AND price IS NULL)
+);
