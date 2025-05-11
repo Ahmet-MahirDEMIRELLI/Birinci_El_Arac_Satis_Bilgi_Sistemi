@@ -50,10 +50,32 @@ VALUES
 (3, 3, '2025-04-28', 510000.00),
 (5, 5, '2025-05-03', 485000.00);
 
-INSERT INTO requests (user_id, request_type, vehicle_id, request_date, status, price)
+INSERT INTO requests (user_id, request_type, vehicle_id, request_date, status)
 VALUES 
-(1, 'test_drive', 1, '2025-04-10', 'accepted', NULL),
-(2, 'price_offer', 2, '2025-04-11', 'pending', 500000.00),
-(3, 'test_drive', 3, '2025-04-12', 'rejected', NULL),
-(4, 'price_offer', 4, '2025-04-13', 'accepted', 800000.00),
-(5, 'test_drive', 5, '2025-04-14', 'pending', NULL);
+(1, 'test_drive', 1, '2025-04-10', 'accepted'),
+(2, 'price_offer', 2, '2025-04-11', 'pending'),
+(3, 'test_drive', 3, '2025-04-12', 'rejected'),
+(4, 'price_offer', 4, '2025-04-13', 'accepted'),
+(5, 'test_drive', 5, '2025-04-14', 'pending');
+
+INSERT INTO requests (user_id, request_type, vehicle_id, request_date, status)
+VALUES 
+(2, 'price_offer', 2, '2025-05-20', 'accepted'),
+(1, 'price_offer', 1, '2025-04-05', 'accepted'),
+(4, 'price_offer', 4, '2025-03-15', 'accepted'),
+(3, 'price_offer', 3, '2025-04-20', 'accepted'),
+(5, 'price_offer', 5, '2025-04-28', 'accepted')
+(2, 'order', 2, '2025-05-01', 'accepted'),
+(1, 'order', 1, '2025-04-12', 'accepted'),
+(4, 'order', 4, '2025-04-17', 'accepted'),
+(3, 'order', 3, '2025-04-22', 'accepted'),
+(5, 'order', 5, '2025-05-03', 'accepted');
+
+INSERT INTO price_offers (request_id, user_id, vehicle_id, offer_date, offered_price)
+VALUES 
+(4, 4, 4, '2025-04-25', 800000.00);
+(6, 2, 2, '2025-04-26', 640000.00),
+(7, 1, 1, '2025-04-08', 445000.00),
+(8, 4, 4, '2025-03-20', 770000.00),
+(9, 3, 3, '2025-04-21', 510000.00),
+(10, 5, 5, '2025-05-04', 485000.00);
