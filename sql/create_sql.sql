@@ -210,3 +210,15 @@ CHECK (
   OR
   (request_type = 'test_drive' AND price IS NULL)
 );
+
+ALTER TABLE requests DROP CONSTRAINT requests_check;
+
+
+CREATE TABLE price_offers (
+    offer_id SERIAL PRIMARY KEY,
+    request_id INT NOT NULL REFERENCES requests(request_id),
+    user_id INT NOT NULL REFERENCES customer(customer_id),
+    vehicle_id INT NOT NULL REFERENCES vehicle(vehicle_id),
+    offer_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    offered_price NUMERIC(12, 2) NOT NULL
+);
