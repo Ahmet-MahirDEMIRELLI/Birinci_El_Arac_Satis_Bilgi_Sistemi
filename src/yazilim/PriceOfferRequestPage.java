@@ -1,5 +1,7 @@
 package yazilim;
 
+import yazilim.requests.PriceOfferRequest;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
