@@ -84,7 +84,21 @@ public class WarehouseMainPage {
 	    frame.getContentPane().add(newCarButton);
 
 	    y += 60;
+	    
+	    JButton viewStockButton = new JButton("Stokları Görüntüle");
+        viewStockButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+        viewStockButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
+        frame.getContentPane().add(viewStockButton);
+        viewStockButton.setFocusable(false);
 
+        viewStockButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new ShowCarStockPage(conn); // yeni sayfayı aç
+            }
+        });
+        
+        y += 60;
+        
 	    JButton changePasswordButton = new JButton("Şifre Değiştir");
 	    changePasswordButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
 	    changePasswordButton.setFont(new Font("Tahoma", Font.BOLD, 16));

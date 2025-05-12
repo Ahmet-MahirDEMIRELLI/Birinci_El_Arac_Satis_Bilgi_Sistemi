@@ -3,6 +3,7 @@ package yazilim;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -84,7 +85,7 @@ public class DealerRequestPage {
         frame.add(testPanel);
 
         loadRequests();
-
+/*
         approvePriceBtn.addActionListener(e -> {
             int index = priceList.getSelectedIndex();
             if (index != -1 && !priceField.getText().isEmpty()) {
@@ -92,13 +93,63 @@ public class DealerRequestPage {
                     int requestId = priceRequestIds.get(index);
                     double price = Double.parseDouble(priceField.getText());
                     PreparedStatement ps = conn.prepareStatement(
-                        "UPDATE requests SET status = 'accepted', price = ? WHERE request_id = ?"
+                        "UPDATE requests SET status = 'accepted' WHERE request_id = ?"
                     );
                     ps.setDouble(1, price);
                     ps.setInt(2, requestId);
                     ps.executeUpdate();
                     JOptionPane.showMessageDialog(frame, "Fiyat teklifi onaylandı.");
                     loadRequests();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(frame, "Hata oluştu.");
+                }
+            }
+        });
+*/
+        
+        approvePriceBtn.addActionListener(e -> {
+            int index = priceList.getSelectedIndex();
+            if (index != -1 && !priceField.getText().isEmpty()) {
+                try {
+                    int requestId = priceRequestIds.get(index);
+                    double price = Double.parseDouble(priceField.getText());
+
+                    // 1. user_id ve vehicle_id'yi requests tablosundan al
+                    PreparedStatement psSelect = conn.prepareStatement(
+                        "SELECT user_id, vehicle_id FROM requests WHERE request_id = ?"
+                    );
+                    psSelect.setInt(1, requestId);
+                    ResultSet rs = psSelect.executeQuery();
+
+                    if (rs.next()) {
+                        int userId = rs.getInt("user_id");
+                        int vehicleId = rs.getInt("vehicle_id");
+
+                        // 2. requests tablosunu güncelle
+                        PreparedStatement psUpdate = conn.prepareStatement(
+                            "UPDATE requests SET status = 'accepted' WHERE request_id = ?"
+                        );
+                        psUpdate.setInt(1, requestId);
+                        psUpdate.executeUpdate();
+
+                        // 3. price_offers tablosuna insert yap
+                        PreparedStatement psInsert = conn.prepareStatement(
+                            "INSERT INTO price_offers (request_id, user_id, vehicle_id, offer_date, offered_price) VALUES (?, ?, ?, CURRENT_DATE, ?)"
+                        );
+                        psInsert.setInt(1, requestId);
+                        psInsert.setInt(2, userId);
+                        psInsert.setInt(3, vehicleId);
+                        psInsert.setBigDecimal(4, new BigDecimal(price));
+
+                        psInsert.executeUpdate();
+
+                        JOptionPane.showMessageDialog(frame, "Fiyat teklifi onaylandı.");
+                        loadRequests();
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "İlgili talep bulunamadı.");
+                    }
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(frame, "Hata oluştu.");

@@ -58,7 +58,7 @@ public class DealerMainPage {
 	private void initialize() {
 	    frame = new JFrame();
 	    frame.setTitle("Bayi Ana Sayfası");
-	    frame.setBounds(100, 100, 500, 350);
+	    frame.setBounds(100, 100, 500, 400);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.getContentPane().setLayout(null);
 
@@ -75,6 +75,21 @@ public class DealerMainPage {
 	    frame.getContentPane().add(showRequestsButton);
 
 	    y += 60;
+	    
+	    
+	    JButton viewStockButton = new JButton("Stokları Görüntüle");
+        viewStockButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+        viewStockButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
+        frame.getContentPane().add(viewStockButton);
+        viewStockButton.setFocusable(false);
+
+        viewStockButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new ShowCarStockPage(conn); // yeni sayfayı aç
+            }
+        });
+        
+        y += 60;
 
 	    JButton getFromStockButton = new JButton("Stoktan Araç Çek");
 	    getFromStockButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
