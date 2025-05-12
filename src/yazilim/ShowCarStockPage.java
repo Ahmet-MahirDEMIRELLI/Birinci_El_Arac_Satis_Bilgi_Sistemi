@@ -22,31 +22,55 @@ public class ShowCarStockPage {
 
     private void initialize() {
         frame = new JFrame("Depo ve Bayi Araç Stokları");
-        frame.setSize(800, 600);
-        frame.setLayout(new GridLayout(4, 1));
+        frame.setSize(850, 600);
+        frame.setLocationRelativeTo(null); // ekran ortasına yerleştir
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBackground(new Color(245, 245, 245)); // açık gri arka plan
 
-         // Başlıklar
-        JLabel warehouseLabel = new JLabel("Depo Stokları", SwingConstants.CENTER);
-        warehouseLabel.setFont(new Font("Tahoma", Font.BOLD, 16));
+        // Ortak font
+        Font titleFont = new Font("Segoe UI", Font.BOLD, 18);
 
-        JLabel dealerLabel = new JLabel("Bayi Stokları", SwingConstants.CENTER);
-        dealerLabel.setFont(new Font("Tahoma", Font.BOLD, 16));
+        // Depo başlık
+        JLabel warehouseLabel = new JLabel("Depo Stokları", SwingConstants.LEFT);
+        warehouseLabel.setFont(titleFont);
+        warehouseLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10));
 
-        // Tablo modelleri
+        // Depo tablo modeli ve tablo
         DefaultTableModel warehouseModel = new DefaultTableModel(new Object[]{"Marka", "Model", "Yıl", "Paket", "Fiyat", "Adet"}, 0);
-        DefaultTableModel dealerModel = new DefaultTableModel(new Object[]{"Marka", "Model", "Yıl", "Paket", "Fiyat", "Adet"}, 0);
-
         warehouseTable = new JTable(warehouseModel);
-        dealerTable = new JTable(dealerModel);
+        JScrollPane warehouseScrollPane = new JScrollPane(warehouseTable);
+        warehouseScrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        warehouseScrollPane.setPreferredSize(new Dimension(800, 180));
 
+        // Bayi başlık
+        JLabel dealerLabel = new JLabel("Bayi Stokları", SwingConstants.LEFT);
+        dealerLabel.setFont(titleFont);
+        dealerLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 5, 10));
+
+        // Bayi tablo modeli ve tablo
+        DefaultTableModel dealerModel = new DefaultTableModel(new Object[]{"Marka", "Model", "Yıl", "Paket", "Fiyat", "Adet"}, 0);
+        dealerTable = new JTable(dealerModel);
+        JScrollPane dealerScrollPane = new JScrollPane(dealerTable);
+        dealerScrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        dealerScrollPane.setPreferredSize(new Dimension(800, 180));
+
+        // Verileri yükle
         loadStockData("warehouse", warehouseModel);
         loadStockData("dealer", dealerModel);
 
-        frame.add(new JScrollPane(warehouseTable), BorderLayout.NORTH);
-        frame.add(new JScrollPane(dealerTable), BorderLayout.SOUTH);
+        // Panelleri sırayla ekle
+        mainPanel.add(warehouseLabel);
+        mainPanel.add(warehouseScrollPane);
+        mainPanel.add(dealerLabel);
+        mainPanel.add(dealerScrollPane);
 
+        frame.add(mainPanel);
         frame.setVisible(true);
     }
+
 
     private void loadStockData(String locationType, DefaultTableModel model) {
         try {
