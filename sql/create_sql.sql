@@ -211,7 +211,7 @@ CHECK (
   (request_type = 'test_drive' AND price IS NULL)
 );
 
-ALTER TABLE requests DROP COLUMN status;
+ALTER TABLE requests DROP COLUMN price;
 
 ALTER TABLE requests DROP CONSTRAINT requests_request_type_check; 
 ALTER TABLE requests ADD CONSTRAINT requests_request_type_check 
