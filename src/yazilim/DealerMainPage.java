@@ -58,7 +58,7 @@ public class DealerMainPage {
 	private void initialize() {
 	    frame = new JFrame();
 	    frame.setTitle("Bayi Ana Sayfası");
-	    frame.setBounds(100, 100, 500, 400);
+	    frame.setBounds(100, 100, 500, 500);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.getContentPane().setLayout(null);
 
@@ -113,6 +113,15 @@ public class DealerMainPage {
 
 	    y += 60;
 
+	    JButton approveOrdersButton = new JButton("Satış Onayı");
+	    approveOrdersButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
+	    approveOrdersButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+	    approveOrdersButton.setFocusable(false);
+	    approveOrdersButton.addActionListener(e -> new DealerOrderApprovalPage(conn, dealerId));
+	    frame.getContentPane().add(approveOrdersButton);
+
+	    y += 60;
+
 	    JButton returnButton = new JButton("Çıkış Yap");
 	    returnButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
 	    returnButton.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -124,8 +133,6 @@ public class DealerMainPage {
 	    });
 	    frame.getContentPane().add(returnButton);
 	}
-
-
 
 	public void showFrame() {
 		frame.setVisible(true);
