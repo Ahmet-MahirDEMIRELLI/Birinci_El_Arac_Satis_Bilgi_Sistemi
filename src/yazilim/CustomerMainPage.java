@@ -58,7 +58,7 @@ public class CustomerMainPage {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setTitle("Müşteri Ana Sayfası");
-		frame.setBounds(100, 100, 650, 320);
+		frame.setBounds(100, 100, 650, 370);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -75,7 +75,6 @@ public class CustomerMainPage {
 		offerButton.setBounds(100, 30, 200, 30);
 		frame.getContentPane().add(offerButton);
 		
-		
 		JButton offerStatusButton = new JButton("Fiyat Tekliflerim");
 		offerStatusButton.setFocusable(false);
 		offerStatusButton.addActionListener(new ActionListener() {
@@ -88,7 +87,6 @@ public class CustomerMainPage {
 		offerStatusButton.setFont(new Font("Tahoma", Font.BOLD, 16));
 		offerStatusButton.setBounds(350, 30, 200, 30);
 		frame.getContentPane().add(offerStatusButton);
-		
 		
 		JButton testDriveButton = new JButton("Test Sürüşü Talep Et");
 		testDriveButton.setFocusable(false);
@@ -152,8 +150,19 @@ public class CustomerMainPage {
 			}
 		});
 		myCarsButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-		myCarsButton.setBounds(225, 180, 200, 30);
+		myCarsButton.setBounds(100, 180, 200, 30);
 		frame.getContentPane().add(myCarsButton);
+		
+		JButton changePasswordButton = new JButton("Şifre Değiştir");
+		changePasswordButton.setFocusable(false);
+		changePasswordButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new CustomerChangePassword(conn, usrId);
+			}
+		});
+		changePasswordButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		changePasswordButton.setBounds(350, 180, 200, 30);
+		frame.getContentPane().add(changePasswordButton);
 		
 		JButton returnButton = new JButton("Çıkış Yap");
 		returnButton.addActionListener(new ActionListener() {
