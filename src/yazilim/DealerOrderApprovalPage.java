@@ -1,0 +1,174 @@
+package yazilim;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+import java.util.ArrayList;
+
+public class DealerOrderApprovalPage {
+    private JFrame frame;
+    private Connection conn;
+    private DefaultListModel<String> orderModel = new DefaultListModel<>();
+    private JList<String> orderList;
+    private ArrayList<Integer> orderRequestIds = new ArrayList<>();
+
+    public DealerOrderApprovalPage(Connection conn, int dealerId) {
+        this.conn = conn;
+        initialize();
+    }
+
+    private void initialize() {
+        frame = new JFrame("Satış Onayı");
+        frame.setBounds(100, 100, 600, 400);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLayout(new BorderLayout(10, 10));
+        frame.getContentPane().setBackground(Color.WHITE);
+
+        JLabel titleLabel = new JLabel("Bekleyen Sipariş Talepleri", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        frame.add(titleLabel, BorderLayout.NORTH);
+
+        orderList = new JList<>(orderModel);
+        orderList.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        orderList.setVisibleRowCount(10);
+        frame.add(new JScrollPane(orderList), BorderLayout.CENTER);
+
+        JPanel bottomPanel = new JPanel(new FlowLayout());
+        bottomPanel.setBackground(Color.WHITE);
+        JButton approveBtn = new JButton("✅ Onayla");
+        JButton rejectBtn = new JButton("❌ Reddet");
+        styleButton(approveBtn);
+        styleButton(rejectBtn);
+        bottomPanel.add(approveBtn);
+        bottomPanel.add(rejectBtn);
+        frame.add(bottomPanel, BorderLayout.SOUTH);
+
+        loadOrders();
+
+        approveBtn.addActionListener(e -> {
+            int index = orderList.getSelectedIndex();
+            if (index != -1) {
+                try {
+                    int requestId = orderRequestIds.get(index);
+
+                    // 1. Update request status
+                    PreparedStatement ps = conn.prepareStatement(
+                        "UPDATE requests SET status = 'accepted' WHERE request_id = ?"
+                    );
+                    ps.setInt(1, requestId);
+                    ps.executeUpdate();
+
+                    // 2. Get user_id and vehicle_id from requests
+                    PreparedStatement selectStmt = conn.prepareStatement(
+                        "SELECT user_id, vehicle_id FROM requests WHERE request_id = ?"
+                    );
+                    selectStmt.setInt(1, requestId);
+                    ResultSet rs = selectStmt.executeQuery();
+
+                    if (rs.next()) {
+                        int userId = rs.getInt("user_id");
+                        int vehicleId = rs.getInt("vehicle_id");
+
+                        // 3. Get price from price_offers
+                        PreparedStatement priceStmt = conn.prepareStatement(
+                            "SELECT offered_price FROM price_offers WHERE user_id = ? AND vehicle_id = ?"
+                        );
+                        priceStmt.setInt(1, userId);
+                        priceStmt.setInt(2, vehicleId);
+                        ResultSet priceRs = priceStmt.executeQuery();
+
+                        double price = 0.0;
+                        if (priceRs.next()) {
+                            price = priceRs.getDouble("offered_price");
+                        }
+
+                        // 4. Insert into sales
+                        PreparedStatement insertStmt = conn.prepareStatement(
+                            "INSERT INTO sales (user_id, vehicle_id, sale_date, sale_price) VALUES (?, ?, CURRENT_DATE, ?)"
+                        );
+                        insertStmt.setInt(1, userId);
+                        insertStmt.setInt(2, vehicleId);
+                        insertStmt.setDouble(3, price);
+                        insertStmt.executeUpdate();
+
+                        // 5. Delete from price_offers
+                        PreparedStatement deletePrice = conn.prepareStatement(
+                            "DELETE FROM price_offers WHERE user_id = ? AND vehicle_id = ?"
+                        );
+                        deletePrice.setInt(1, userId);
+                        deletePrice.setInt(2, vehicleId);
+                        deletePrice.executeUpdate();
+                    }
+
+                    JOptionPane.showMessageDialog(frame, "Sipariş onaylandı, satış kaydedildi ve teklif silindi.");
+                    loadOrders();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(frame, "Hata oluştu.");
+                }
+            }
+        });
+
+        rejectBtn.addActionListener(e -> {
+            int index = orderList.getSelectedIndex();
+            if (index != -1) {
+                try {
+                    int requestId = orderRequestIds.get(index);
+                    PreparedStatement ps = conn.prepareStatement(
+                        "UPDATE requests SET status = 'rejected' WHERE request_id = ?"
+                    );
+                    ps.setInt(1, requestId);
+                    ps.executeUpdate();
+                    JOptionPane.showMessageDialog(frame, "Sipariş reddedildi.");
+                    loadOrders();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(frame, "Hata oluştu.");
+                }
+            }
+        });
+
+        frame.setVisible(true);
+    }
+
+    private void styleButton(JButton button) {
+        button.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        button.setFocusPainted(false);
+        button.setBackground(new Color(230, 230, 230));
+    }
+
+    private void loadOrders() {
+        orderModel.clear();
+        orderRequestIds.clear();
+        try {
+            String query = """
+                SELECT r.request_id, r.user_id, r.vehicle_id, r.request_date,
+                       v.brand, v.model, v.year, p.offered_price
+                FROM requests r
+                JOIN vehicle v ON r.vehicle_id = v.vehicle_id
+                JOIN price_offers p ON r.vehicle_id = p.vehicle_id AND r.user_id = p.user_id
+                WHERE r.request_type = 'order' AND r.status = 'pending'
+            """;
+
+            PreparedStatement ps = conn.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("request_id");
+                int userId = rs.getInt("user_id");
+                String brand = rs.getString("brand");
+                String model = rs.getString("model");
+                int year = rs.getInt("year");
+                double price = rs.getDouble("offered_price");
+                Date date = rs.getDate("request_date");
+
+                String line = "Kullanıcı: " + userId + ", Araç: " + brand + " " + model + " (" + year + "), Fiyat: " + String.format("%.2f TL", price) + ", Tarih: " + date;
+                orderModel.addElement(line);
+                orderRequestIds.add(id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
