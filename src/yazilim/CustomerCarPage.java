@@ -10,10 +10,8 @@ import java.sql.*;
 
 public class CustomerCarPage {
     private JFrame frame;
-    private JTable table;
     private Customer customer;
     public JTable table;
-    private int userId;
     private static Connection conn;
     
     /**
