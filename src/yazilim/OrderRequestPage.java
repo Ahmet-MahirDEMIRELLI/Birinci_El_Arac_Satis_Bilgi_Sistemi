@@ -2,6 +2,7 @@ package yazilim;
 
 import javax.swing.*;
 
+import yazilim.classes.Customer;
 import yazilim.requests.OrderRequest;
 
 import java.awt.*;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 public class OrderRequestPage {
     private JFrame frame;
     private JComboBox<String> vehicleCombo;
-    private int userId;
+    private Customer customer;
 	private static Connection conn;
 	    
 	    /**
@@ -23,7 +24,7 @@ public class OrderRequestPage {
 				public void run() {
 					try {
 						conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-						OrderRequestPage window = new OrderRequestPage(1, conn);
+						OrderRequestPage window = new OrderRequestPage(new Customer(), conn);
 						window.frame.setVisible(true);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -33,8 +34,8 @@ public class OrderRequestPage {
 		}
 
 
-    public OrderRequestPage(int userId, Connection conn) {
-        this.userId = userId;
+    public OrderRequestPage(Customer cstmr, Connection conn) {
+        this.customer = cstmr;
         this.conn = conn;
 
         if (!hasAnyPriceOffer()) {
@@ -48,7 +49,7 @@ public class OrderRequestPage {
         String query = "SELECT COUNT(*) AS offer_count FROM price_offers WHERE user_id = ?";
         try {
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setInt(1, userId);
+            stmt.setInt(1, customer.getCustomerId());
             ResultSet rs = stmt.executeQuery();
             if (rs.next() && rs.getInt("offer_count") > 0) {
                 return true;
@@ -121,8 +122,8 @@ public class OrderRequestPage {
                             }
                         }
 
-                        OrderRequest request = new OrderRequest(userId, vehicleId, LocalDate.now(), conn, offerId);
-                        if (request.processRequest(userId, vehicleId, LocalDate.now())) {
+                        OrderRequest request = new OrderRequest(customer.getCustomerId(), vehicleId, LocalDate.now(), conn, offerId);
+                        if (request.processRequest(customer.getCustomerId(), vehicleId, LocalDate.now())) {
                             JOptionPane.showMessageDialog(frame, "Sipariş başarıyla gönderildi.");
                         } else {
                             JOptionPane.showMessageDialog(frame, "Sipariş gönderilemedi.");
@@ -148,7 +149,7 @@ public class OrderRequestPage {
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                CustomerMainPage mainPage = new CustomerMainPage(userId, conn);
+                CustomerMainPage mainPage = new CustomerMainPage(customer, conn);
                 mainPage.showFrame();
             }
         });
@@ -174,7 +175,7 @@ public class OrderRequestPage {
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                CustomerMainPage mainPage = new CustomerMainPage(userId, conn);
+                CustomerMainPage mainPage = new CustomerMainPage(customer, conn);
                 mainPage.showFrame();
             }
         });
@@ -189,7 +190,7 @@ public class OrderRequestPage {
                 WHERE p.user_id = ?
             """;
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setInt(1, userId); 
+            stmt.setInt(1, customer.getCustomerId()); 
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {

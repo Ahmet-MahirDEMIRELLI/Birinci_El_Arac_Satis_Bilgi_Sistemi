@@ -16,10 +16,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import yazilim.classes.Customer;
+
 public class TestDriveStatusPage {
 	private JFrame frame;
     private JTable table;
-    private int userId;
+    private Customer customer;
 	private static Connection conn;
 	    
 	    /**
@@ -30,7 +32,7 @@ public class TestDriveStatusPage {
 				public void run() {
 					try {
 						conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-						TestDriveStatusPage window = new TestDriveStatusPage(1, conn);
+						TestDriveStatusPage window = new TestDriveStatusPage(new Customer(), conn);
 						window.frame.setVisible(true);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -39,8 +41,8 @@ public class TestDriveStatusPage {
 			});
 		}
 
-    public TestDriveStatusPage(int userId, Connection conn) {
-        this.userId = userId;
+    public TestDriveStatusPage(Customer cstmr, Connection conn) {
+        this.customer = cstmr;
         this.conn = conn;
         initialize();
         loadTestDriveRequests();
@@ -62,7 +64,7 @@ public class TestDriveStatusPage {
         backButton.setFocusable(false);
         backButton.addActionListener(e -> {
             frame.dispose();
-            CustomerMainPage mainPage = new CustomerMainPage(userId, conn);
+            CustomerMainPage mainPage = new CustomerMainPage(customer, conn);
             mainPage.showFrame();
         });
 
@@ -83,7 +85,7 @@ public class TestDriveStatusPage {
 
         try {
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setInt(1, userId);
+            stmt.setInt(1, customer.getCustomerId());
             ResultSet rs = stmt.executeQuery();
             DefaultTableModel model = (DefaultTableModel) table.getModel();
 

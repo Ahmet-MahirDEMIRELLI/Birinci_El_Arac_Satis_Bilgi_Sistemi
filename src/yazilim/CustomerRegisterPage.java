@@ -12,6 +12,8 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
+import yazilim.classes.Customer;
+
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -224,12 +226,33 @@ public class CustomerRegisterPage {
 							
 							ResultSet r = statement.executeQuery();
 							if (r.next()) {
-								JOptionPane.showMessageDialog(null,
-										"Your new id is : " + r.getInt(1));
+								JOptionPane.showMessageDialog(null, "Your new id is : " + r.getInt(1));
 								newId = r.getInt(1);
-								CustomerMainPage pg = new CustomerMainPage(newId, conn);
-								pg.showFrame();
-								frame.setVisible(false);
+								
+								query = "SELECT customer_id, email, first_name, last_name, phone_number, gender, age, profession, income_level, city, first_visit_date   FROM customer WHERE customer_id = ?";
+								PreparedStatement p = conn.prepareStatement(query);
+								p.clearParameters();
+								p.setInt(1, newId);
+								r = p.executeQuery();
+								if (r.next()) {
+								    Customer customer = new Customer(
+								        r.getInt("customer_id"),
+								        r.getString("email"),
+								        r.getString("first_name"),
+								        r.getString("last_name"),
+								        r.getString("phone_number"),
+								        r.getString("gender"),
+								        r.getInt("age"),
+								        r.getString("profession"),
+								        r.getString("income_level"),
+								        r.getString("city"),
+								        r.getTimestamp("first_visit_date")
+								    );
+								    System.out.println(customer.toString());
+									CustomerMainPage pg = new CustomerMainPage(customer, conn);
+									pg.showFrame();
+									frame.setVisible(false);
+								}
 							}
 						}
 						else {

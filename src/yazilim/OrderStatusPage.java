@@ -2,13 +2,16 @@ package yazilim;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import yazilim.classes.Customer;
+
 import java.awt.*;
 import java.sql.*;
 
 public class OrderStatusPage {
     private JFrame frame;
     private JTable table;
-    private int userId;
+    private Customer customer;
 	private static Connection conn;
 	    
 	    /**
@@ -19,7 +22,7 @@ public class OrderStatusPage {
 				public void run() {
 					try {
 						conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-						OrderStatusPage window = new OrderStatusPage(1, conn);
+						OrderStatusPage window = new OrderStatusPage(new Customer(), conn);
 						window.frame.setVisible(true);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -28,8 +31,8 @@ public class OrderStatusPage {
 			});
 		}
 
-    public OrderStatusPage(int userId, Connection conn) {
-        this.userId = userId;
+    public OrderStatusPage(Customer cstmr, Connection conn) {
+        this.customer = cstmr;
         this.conn = conn;
         initialize();
         loadOrderRequests();
@@ -51,7 +54,7 @@ public class OrderStatusPage {
         backButton.setFocusable(false);
         backButton.addActionListener(e -> {
             frame.dispose();
-            CustomerMainPage mainPage = new CustomerMainPage(userId, conn);
+            CustomerMainPage mainPage = new CustomerMainPage(customer, conn);
             mainPage.showFrame();
         });
 
@@ -71,7 +74,7 @@ public class OrderStatusPage {
 
         try {
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setInt(1, userId);
+            stmt.setInt(1, customer.getCustomerId());
             ResultSet rs = stmt.executeQuery();
             DefaultTableModel model = (DefaultTableModel) table.getModel();
 

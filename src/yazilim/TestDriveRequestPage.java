@@ -2,6 +2,7 @@ package yazilim;
 
 import javax.swing.*;
 
+import yazilim.classes.Customer;
 import yazilim.requests.TestDriveRequest;
 
 import java.awt.*;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 public class TestDriveRequestPage {
     private JFrame frame;
     private JComboBox<String> vehicleCombo;
-    private int userId;
+    private Customer customer;
 	private static Connection conn;
 	    
 	    /**
@@ -23,7 +24,7 @@ public class TestDriveRequestPage {
 				public void run() {
 					try {
 						conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-						TestDriveRequestPage window = new TestDriveRequestPage(1, conn);
+						TestDriveRequestPage window = new TestDriveRequestPage(new Customer(), conn);
 						window.frame.setVisible(true);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -32,8 +33,8 @@ public class TestDriveRequestPage {
 			});
 		}
 
-    public TestDriveRequestPage(int userId, Connection conn) {
-        this.userId = userId;
+    public TestDriveRequestPage(Customer cstmr, Connection conn) {
+        this.customer = cstmr;
         this.conn = conn;
         initialize();
     }
@@ -71,8 +72,8 @@ public class TestDriveRequestPage {
                         int vehicleId = Integer.parseInt(selectedVehicle.split("-")[0].trim());
                         LocalDate requestDate = LocalDate.now(); 
                         
-                        TestDriveRequest request = new TestDriveRequest(userId, vehicleId, requestDate, conn);
-                        if (request.processRequest(userId, vehicleId, requestDate)) {
+                        TestDriveRequest request = new TestDriveRequest(customer.getCustomerId(), vehicleId, requestDate, conn);
+                        if (request.processRequest(customer.getCustomerId(), vehicleId, requestDate)) {
                             JOptionPane.showMessageDialog(frame, "Test sürüşü talebi başarıyla gönderildi.");
                         } else {
                             JOptionPane.showMessageDialog(frame, "Test sürüşü talebi gönderilemedi.");
@@ -93,7 +94,7 @@ public class TestDriveRequestPage {
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); 
-                CustomerMainPage mainPage = new CustomerMainPage(userId, conn);
+                CustomerMainPage mainPage = new CustomerMainPage(customer, conn);
                 mainPage.showFrame();
             }
         });

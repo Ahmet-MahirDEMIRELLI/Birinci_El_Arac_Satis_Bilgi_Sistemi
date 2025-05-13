@@ -2,6 +2,7 @@ package yazilim;
 
 import javax.swing.*;
 
+import yazilim.classes.Customer;
 import yazilim.requests.PriceOfferRequest;
 
 import java.awt.*;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 public class PriceOfferRequestPage {
     private JFrame frame;
     private JComboBox<String> vehicleCombo;
-    private int userId;
+    private Customer customer;
 	private static Connection conn;
 	    
 	    /**
@@ -24,7 +25,7 @@ public class PriceOfferRequestPage {
 				public void run() {
 					try {
 						conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-						PriceOfferRequestPage window = new PriceOfferRequestPage(1, conn);
+						PriceOfferRequestPage window = new PriceOfferRequestPage(new Customer(), conn);
 						window.frame.setVisible(true);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -33,8 +34,8 @@ public class PriceOfferRequestPage {
 			});
 		}
 
-    public PriceOfferRequestPage(int userId, Connection conn) {
-        this.userId = userId;
+    public PriceOfferRequestPage(Customer cstmr, Connection conn) {
+        this.customer = cstmr;
         this.conn = conn;
         initialize();
     }
@@ -70,8 +71,8 @@ public class PriceOfferRequestPage {
                 if (selectedVehicle != null) {
                     try {
                         int vehicleId = Integer.parseInt(selectedVehicle.split("-")[0].trim());
-                        PriceOfferRequest request = new PriceOfferRequest(userId, vehicleId, LocalDate.now(), conn);
-                        if (request.processRequest(userId, vehicleId, LocalDate.now())) {
+                        PriceOfferRequest request = new PriceOfferRequest(customer.getCustomerId(), vehicleId, LocalDate.now(), conn);
+                        if (request.processRequest(customer.getCustomerId(), vehicleId, LocalDate.now())) {
                             JOptionPane.showMessageDialog(frame, "Teklif isteği başarıyla gönderildi.");
                         } else {
                             JOptionPane.showMessageDialog(frame, "İstek gönderilemedi.");
@@ -92,7 +93,7 @@ public class PriceOfferRequestPage {
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); 
-                CustomerMainPage mainPage = new CustomerMainPage(userId, conn); // Ana sayfaya dön
+                CustomerMainPage mainPage = new CustomerMainPage(customer, conn); // Ana sayfaya dön
                 mainPage.showFrame();
             }
         });

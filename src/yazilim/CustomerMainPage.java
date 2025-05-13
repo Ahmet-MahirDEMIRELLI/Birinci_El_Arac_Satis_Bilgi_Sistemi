@@ -69,7 +69,7 @@ public class CustomerMainPage {
 		offerButton.setFocusable(false);
 		offerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				PriceOfferRequestPage offerPage = new PriceOfferRequestPage(customer.getCustomerId(), conn);
+				PriceOfferRequestPage offerPage = new PriceOfferRequestPage(customer, conn);
 				offerPage.showFrame();
 			}
 		});
@@ -81,7 +81,7 @@ public class CustomerMainPage {
 		offerStatusButton.setFocusable(false);
 		offerStatusButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				PriceOfferStatusPage offerStatusPage = new PriceOfferStatusPage(customer.getCustomerId(), conn);
+				PriceOfferStatusPage offerStatusPage = new PriceOfferStatusPage(customer, conn);
 				offerStatusPage.showFrame();
 			}
 		});
@@ -93,7 +93,7 @@ public class CustomerMainPage {
 		testDriveButton.setFocusable(false);
 		testDriveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TestDriveRequestPage testDrivePage = new TestDriveRequestPage(customer.getCustomerId(), conn);
+				TestDriveRequestPage testDrivePage = new TestDriveRequestPage(customer, conn);
 				testDrivePage.showFrame();
 			}
 		});
@@ -105,7 +105,7 @@ public class CustomerMainPage {
 		testDriveStatusButton.setFocusable(false);
 		testDriveStatusButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TestDriveStatusPage testDriveStatusPage = new TestDriveStatusPage(customer.getCustomerId(), conn);
+				TestDriveStatusPage testDriveStatusPage = new TestDriveStatusPage(customer, conn);
 				testDriveStatusPage.showFrame();
 			}
 		});
@@ -117,7 +117,7 @@ public class CustomerMainPage {
 		orderButton.setFocusable(false);
 		orderButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				OrderRequestPage orderRequestPage = new OrderRequestPage(customer.getCustomerId(), conn);
+				OrderRequestPage orderRequestPage = new OrderRequestPage(customer, conn);
 				orderRequestPage.showFrame();
 			}
 		});
@@ -129,7 +129,7 @@ public class CustomerMainPage {
 		orderStatusButton.setFocusable(false);
 		orderStatusButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				OrderStatusPage orderStatusPage = new OrderStatusPage(customer.getCustomerId(), conn);
+				OrderStatusPage orderStatusPage = new OrderStatusPage(customer, conn);
 				orderStatusPage.showFrame();
 			}
 		});
@@ -141,7 +141,7 @@ public class CustomerMainPage {
 		myCarsButton.setFocusable(false);
 		myCarsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CustomerCarPage customerCarPage = new CustomerCarPage(customer.getCustomerId(), conn);
+				CustomerCarPage customerCarPage = new CustomerCarPage(customer, conn);
 				customerCarPage.showFrame();
 			}
 		});

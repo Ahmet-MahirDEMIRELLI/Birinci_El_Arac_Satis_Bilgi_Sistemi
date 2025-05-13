@@ -16,10 +16,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import yazilim.classes.Customer;
+
 public class PriceOfferStatusPage {
     private JFrame frame;
     private JTable table;
-    private int userId;
+    private Customer customer;
 	private static Connection conn;
 	    
 	    /**
@@ -30,7 +32,7 @@ public class PriceOfferStatusPage {
 				public void run() {
 					try {
 						conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-						PriceOfferStatusPage window = new PriceOfferStatusPage(1, conn);
+						PriceOfferStatusPage window = new PriceOfferStatusPage(new Customer(), conn);
 						window.frame.setVisible(true);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -39,8 +41,8 @@ public class PriceOfferStatusPage {
 			});
 		}
 
-    public PriceOfferStatusPage(int userId, Connection conn) {
-        this.userId = userId;
+    public PriceOfferStatusPage(Customer cstmr, Connection conn) {
+        this.customer = cstmr;
         this.conn = conn;
         initialize();
         loadPriceOffers();
@@ -61,7 +63,7 @@ public class PriceOfferStatusPage {
         backButton.setFocusable(false);
         backButton.addActionListener(e -> {
             frame.dispose();
-            CustomerMainPage mainPage = new CustomerMainPage(userId, conn);
+            CustomerMainPage mainPage = new CustomerMainPage(customer, conn);
             mainPage.showFrame();
         });
 
@@ -96,8 +98,8 @@ public class PriceOfferStatusPage {
             """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, userId);
-            stmt.setInt(2, userId);
+            stmt.setInt(1, customer.getCustomerId());
+            stmt.setInt(2, customer.getCustomerId());
             ResultSet rs = stmt.executeQuery();
 
             DefaultTableModel m = (DefaultTableModel) table.getModel();
