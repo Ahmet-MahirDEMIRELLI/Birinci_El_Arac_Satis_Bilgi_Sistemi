@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import yazilim.CustomerCarPage;
+import yazilim.classes.Customer;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -11,13 +12,16 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CustomerCarPageTest {
     private Connection conn;
     private CustomerCarPage customerCarPage;
-    private final int userId = 100;
+    private final Customer customer = new Customer(100, "testuser@example.com", "Test", "User", "555555555", "male", 20, "tester", "high", "Istanbul", new Timestamp(System.currentTimeMillis()));
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -30,11 +34,11 @@ public class CustomerCarPageTest {
         // Test kullanıcı verisi ekleme
         try (PreparedStatement stmt = conn.prepareStatement(
                 "INSERT INTO customer (customer_id, email, password_customer, first_name, last_name) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING")) {
-            stmt.setInt(1, userId);
-            stmt.setString(2, "testuser@example.com");
+            stmt.setInt(1, customer.getCustomerId());
+            stmt.setString(2, customer.getEmail());
             stmt.setString(3, "testpassword");
-            stmt.setString(4, "Test");
-            stmt.setString(5, "User");
+            stmt.setString(4, customer.getFirstName());
+            stmt.setString(5, customer.getLastName());
             stmt.executeUpdate();
         }
 
@@ -52,7 +56,7 @@ public class CustomerCarPageTest {
         try (PreparedStatement stmt = conn.prepareStatement(
                 "INSERT INTO sales (sale_id, user_id, vehicle_id, sale_date, sale_price) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING")) {
             stmt.setInt(1, 100);
-            stmt.setInt(2, userId);
+            stmt.setInt(2, customer.getCustomerId());
             stmt.setInt(3, 100); 
             stmt.setDate(4, java.sql.Date.valueOf("2023-05-01"));
             stmt.setDouble(5, 300000);
@@ -71,7 +75,7 @@ public class CustomerCarPageTest {
         try (PreparedStatement stmt = conn.prepareStatement(
                 "INSERT INTO sales (sale_id, user_id, vehicle_id, sale_date, sale_price) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING")) {
             stmt.setInt(1, 101);
-            stmt.setInt(2, userId);
+            stmt.setInt(2, customer.getCustomerId());
             stmt.setInt(3, 101);
             stmt.setDate(4, java.sql.Date.valueOf("2023-06-01"));
             stmt.setDouble(5, 500000);
@@ -79,7 +83,7 @@ public class CustomerCarPageTest {
         }
 
         
-        customerCarPage = new CustomerCarPage(userId, conn);
+        customerCarPage = new CustomerCarPage(customer, conn);
     }
     //test verilerini silme
     @AfterEach
@@ -92,7 +96,7 @@ public class CustomerCarPageTest {
 
         // sales tablosundan silme
         try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM sales WHERE user_id = ?")) {
-            stmt.setInt(1, userId);
+            stmt.setInt(1, customer.getCustomerId());
             stmt.executeUpdate();
         }
 
@@ -104,7 +108,7 @@ public class CustomerCarPageTest {
 
         // customer tablosundan silme
         try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM customer WHERE customer_id = ?")) {
-            stmt.setInt(1, userId);
+            stmt.setInt(1, customer.getCustomerId());
             stmt.executeUpdate();
         }
 
@@ -165,17 +169,17 @@ public class CustomerCarPageTest {
     @Test
     void testEmptyPurchasedCars() throws SQLException {
         System.out.println("\n=== Testing Empty Purchased Cars ===");
-        System.out.println("Clearing all sales for user ID: " + userId);
+        System.out.println("Clearing all sales for user ID: " + customer.getCustomerId());
 
         // Tüm satışları temizle
         try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM sales WHERE user_id = ?")) {
-            stmt.setInt(1, userId);
+            stmt.setInt(1, customer.getCustomerId());
             int rowsDeleted = stmt.executeUpdate();
-            System.out.println("Deleted " + rowsDeleted + " sales records for user ID: " + userId);
+            System.out.println("Deleted " + rowsDeleted + " sales records for user ID: " + customer.getCustomerId());
         }
 
         // Test edilen sınıfı yeniden başlatma
-        customerCarPage = new CustomerCarPage(userId, conn);
+        customerCarPage = new CustomerCarPage(customer, conn);
 
        
         JTable table = customerCarPage.table;
