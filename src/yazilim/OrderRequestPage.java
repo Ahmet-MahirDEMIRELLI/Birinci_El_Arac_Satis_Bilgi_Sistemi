@@ -87,15 +87,30 @@ public class OrderRequestPage {
 
         orderButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String selectedVehicle = (String) vehicleCombo.getSelectedItem();
-                if (selectedVehicle != null) {
+                String selectedItem = (String) vehicleCombo.getSelectedItem();
+                if (selectedItem != null) {
                     try {
-                        int vehicleId = Integer.parseInt(selectedVehicle.split("-")[0].trim());
+                        String[] parts = selectedItem.split(" - ");
+                        int offerId = Integer.parseInt(parts[0].trim()); 
 
-                        String offerDateQuery = "SELECT offer_date FROM price_offers WHERE user_id = ? AND vehicle_id = ?";
+                        String vehicleQuery = "SELECT vehicle_id FROM price_offers WHERE offer_id = ?";
+                        PreparedStatement stmt = conn.prepareStatement(vehicleQuery);
+                        stmt.setInt(1, offerId);
+                        ResultSet rs = stmt.executeQuery();
+
+                        int vehicleId = -1; 
+                        if (rs.next()) {
+                            vehicleId = rs.getInt("vehicle_id");
+                        }
+
+                        if (vehicleId == -1) {
+                            JOptionPane.showMessageDialog(frame, "Araç bilgisi bulunamadı.");
+                            return;
+                        }
+
+                        String offerDateQuery = "SELECT offer_date FROM price_offers WHERE offer_id = ?";
                         PreparedStatement dateStmt = conn.prepareStatement(offerDateQuery);
-                        dateStmt.setInt(1, userId);
-                        dateStmt.setInt(2, vehicleId);
+                        dateStmt.setInt(1, offerId);
                         ResultSet dateRs = dateStmt.executeQuery();
 
                         if (dateRs.next()) {
@@ -106,7 +121,7 @@ public class OrderRequestPage {
                             }
                         }
 
-                        OrderRequest request = new OrderRequest(userId, vehicleId, LocalDate.now(), conn);
+                        OrderRequest request = new OrderRequest(userId, vehicleId, LocalDate.now(), conn, offerId);
                         if (request.processRequest(userId, vehicleId, LocalDate.now())) {
                             JOptionPane.showMessageDialog(frame, "Sipariş başarıyla gönderildi.");
                         } else {
@@ -121,6 +136,8 @@ public class OrderRequestPage {
                 }
             }
         });
+
+
 
         JButton backButton = new JButton("Geri");
         backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -166,7 +183,7 @@ public class OrderRequestPage {
     private void loadEligibleVehicles() {
         try {
             String query = """
-                SELECT DISTINCT v.vehicle_id, v.brand, v.model, v.year, p.offered_price, p.offer_date
+                SELECT v.vehicle_id, v.brand, v.model, v.year, p.offer_id, p.offered_price, p.offer_date
                 FROM vehicle v
                 JOIN price_offers p ON v.vehicle_id = p.vehicle_id
                 WHERE p.user_id = ?
@@ -176,7 +193,7 @@ public class OrderRequestPage {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("vehicle_id");
+                int offerId = rs.getInt("offer_id");
                 String brand = rs.getString("brand");
                 String model = rs.getString("model");
                 int year = rs.getInt("year");
@@ -184,7 +201,7 @@ public class OrderRequestPage {
                 LocalDate offerDate = rs.getDate("offer_date").toLocalDate();
 
                 String formattedPrice = String.format("%.2f", price);
-                String baseText = id + " - " + brand + " " + model + " (" + year + ")  " + formattedPrice + " TL";
+                String baseText = offerId + " - " + brand + " " + model + " (" + year + ")  " + formattedPrice + " TL";
 
                 String displayText = offerDate.isBefore(LocalDate.now().minusDays(30))
                         ? baseText + " [SÜRESİ DOLMUŞ]"
@@ -197,6 +214,8 @@ public class OrderRequestPage {
             JOptionPane.showMessageDialog(frame, "Araç bilgileri yüklenemedi.");
         }
     }
+
+
 
     public void showFrame() {
         if (frame != null) {
