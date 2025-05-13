@@ -96,7 +96,6 @@ public class DealerMainPage {
 	    getFromStockButton.setFont(new Font("Tahoma", Font.BOLD, 16));
 	    getFromStockButton.setFocusable(false);
 	    getFromStockButton.addActionListener(e -> {
-	        frame.setVisible(false);
 	        PullCarFromStockPage pullCarFromStockPage = new PullCarFromStockPage(dealerId, conn);
 	        pullCarFromStockPage.showFrame();
 	    });

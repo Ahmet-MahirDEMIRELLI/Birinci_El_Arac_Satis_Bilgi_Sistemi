@@ -70,7 +70,7 @@ public class PullCarFromStockPage {
 	    frame = new JFrame();
 	    frame.setTitle("Stoktan Araç Çekme Sayfası");
 	    frame.setBounds(100, 100, 450, 230);
-	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    frame.getContentPane().setLayout(null);
 
 	    vehicleStockList = getVehicleStock();

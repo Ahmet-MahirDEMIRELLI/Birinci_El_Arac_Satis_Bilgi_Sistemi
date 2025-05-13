@@ -66,7 +66,6 @@ public class CustomerMainPage {
 		offerButton.setFocusable(false);
 		offerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);
 				PriceOfferRequestPage offerPage = new PriceOfferRequestPage(usrId, conn);
 				offerPage.showFrame();
 			}
@@ -79,7 +78,6 @@ public class CustomerMainPage {
 		offerStatusButton.setFocusable(false);
 		offerStatusButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);
 				PriceOfferStatusPage offerStatusPage = new PriceOfferStatusPage(usrId, conn);
 				offerStatusPage.showFrame();
 			}
@@ -92,7 +90,6 @@ public class CustomerMainPage {
 		testDriveButton.setFocusable(false);
 		testDriveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);
 				TestDriveRequestPage testDrivePage = new TestDriveRequestPage(usrId, conn);
 				testDrivePage.showFrame();
 			}
@@ -105,7 +102,6 @@ public class CustomerMainPage {
 		testDriveStatusButton.setFocusable(false);
 		testDriveStatusButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);
 				TestDriveStatusPage testDriveStatusPage = new TestDriveStatusPage(usrId, conn);
 				testDriveStatusPage.showFrame();
 			}
@@ -118,7 +114,6 @@ public class CustomerMainPage {
 		orderButton.setFocusable(false);
 		orderButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);
 				OrderRequestPage orderRequestPage = new OrderRequestPage(usrId, conn);
 				orderRequestPage.showFrame();
 			}
@@ -131,7 +126,6 @@ public class CustomerMainPage {
 		orderStatusButton.setFocusable(false);
 		orderStatusButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);
 				OrderStatusPage orderStatusPage = new OrderStatusPage(usrId, conn);
 				orderStatusPage.showFrame();
 			}
@@ -144,7 +138,6 @@ public class CustomerMainPage {
 		myCarsButton.setFocusable(false);
 		myCarsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);
 				CustomerCarPage customerCarPage = new CustomerCarPage(usrId, conn);
 				customerCarPage.showFrame();
 			}

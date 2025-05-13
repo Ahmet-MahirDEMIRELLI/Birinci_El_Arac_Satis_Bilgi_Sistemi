@@ -1,4 +1,4 @@
-package yazilim.classes;
+package yazilim;
 
 import javax.swing.*;
 import java.awt.*;

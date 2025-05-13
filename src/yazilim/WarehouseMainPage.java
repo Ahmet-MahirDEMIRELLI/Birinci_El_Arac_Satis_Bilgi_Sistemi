@@ -8,8 +8,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import yazilim.classes.WarehouseChangePassword;
-
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -76,7 +74,6 @@ public class WarehouseMainPage {
 	    newCarButton.setFocusable(false);
 	    newCarButton.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	            frame.setVisible(false);
 	            AddCarToStockPage addCarToStockPage = new AddCarToStockPage(warehouseId, conn);
 	            addCarToStockPage.showFrame();
 	        }
