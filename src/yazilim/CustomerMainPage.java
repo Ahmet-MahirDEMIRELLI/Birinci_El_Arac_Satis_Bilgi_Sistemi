@@ -7,6 +7,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import yazilim.classes.Customer;
+
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,7 +21,7 @@ import java.awt.event.ActionEvent;
 public class CustomerMainPage {
 	private JFrame frame;
 	private static Connection conn;
-	private int usrId;
+	private Customer customer;
 
 	/**
 	 * Launch the application.
@@ -28,7 +31,7 @@ public class CustomerMainPage {
 			public void run() {
 				Connection dummyConn = null;
 				try {
-					CustomerMainPage window = new CustomerMainPage(1, dummyConn);
+					CustomerMainPage window = new CustomerMainPage(new Customer(), dummyConn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -39,15 +42,15 @@ public class CustomerMainPage {
 	
 	public CustomerMainPage() throws SQLException {
 		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "password");
-		usrId = 1;
+		customer = new Customer();
 		initialize();
 	}
 
 	/**
 	 * Create the application.
 	 */
-	public CustomerMainPage(int userId, Connection parent_conn) {
-		usrId = userId;
+	public CustomerMainPage(Customer cstmr, Connection parent_conn) {
+		customer = cstmr;
 		conn = parent_conn;
 		initialize();
 	}
@@ -66,7 +69,7 @@ public class CustomerMainPage {
 		offerButton.setFocusable(false);
 		offerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				PriceOfferRequestPage offerPage = new PriceOfferRequestPage(usrId, conn);
+				PriceOfferRequestPage offerPage = new PriceOfferRequestPage(customer.getCustomerId(), conn);
 				offerPage.showFrame();
 			}
 		});
@@ -78,7 +81,7 @@ public class CustomerMainPage {
 		offerStatusButton.setFocusable(false);
 		offerStatusButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				PriceOfferStatusPage offerStatusPage = new PriceOfferStatusPage(usrId, conn);
+				PriceOfferStatusPage offerStatusPage = new PriceOfferStatusPage(customer.getCustomerId(), conn);
 				offerStatusPage.showFrame();
 			}
 		});
@@ -90,7 +93,7 @@ public class CustomerMainPage {
 		testDriveButton.setFocusable(false);
 		testDriveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TestDriveRequestPage testDrivePage = new TestDriveRequestPage(usrId, conn);
+				TestDriveRequestPage testDrivePage = new TestDriveRequestPage(customer.getCustomerId(), conn);
 				testDrivePage.showFrame();
 			}
 		});
@@ -102,7 +105,7 @@ public class CustomerMainPage {
 		testDriveStatusButton.setFocusable(false);
 		testDriveStatusButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TestDriveStatusPage testDriveStatusPage = new TestDriveStatusPage(usrId, conn);
+				TestDriveStatusPage testDriveStatusPage = new TestDriveStatusPage(customer.getCustomerId(), conn);
 				testDriveStatusPage.showFrame();
 			}
 		});
@@ -114,7 +117,7 @@ public class CustomerMainPage {
 		orderButton.setFocusable(false);
 		orderButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				OrderRequestPage orderRequestPage = new OrderRequestPage(usrId, conn);
+				OrderRequestPage orderRequestPage = new OrderRequestPage(customer.getCustomerId(), conn);
 				orderRequestPage.showFrame();
 			}
 		});
@@ -126,7 +129,7 @@ public class CustomerMainPage {
 		orderStatusButton.setFocusable(false);
 		orderStatusButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				OrderStatusPage orderStatusPage = new OrderStatusPage(usrId, conn);
+				OrderStatusPage orderStatusPage = new OrderStatusPage(customer.getCustomerId(), conn);
 				orderStatusPage.showFrame();
 			}
 		});
@@ -138,7 +141,7 @@ public class CustomerMainPage {
 		myCarsButton.setFocusable(false);
 		myCarsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CustomerCarPage customerCarPage = new CustomerCarPage(usrId, conn);
+				CustomerCarPage customerCarPage = new CustomerCarPage(customer.getCustomerId(), conn);
 				customerCarPage.showFrame();
 			}
 		});
@@ -150,7 +153,7 @@ public class CustomerMainPage {
 		changePasswordButton.setFocusable(false);
 		changePasswordButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new CustomerChangePassword(conn, usrId);
+				new CustomerChangePassword(conn, customer.getCustomerId());
 			}
 		});
 		changePasswordButton.setFont(new Font("Tahoma", Font.BOLD, 16));

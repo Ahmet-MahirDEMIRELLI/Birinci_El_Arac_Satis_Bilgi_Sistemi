@@ -9,12 +9,16 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+
+import yazilim.classes.Customer;
+
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.awt.event.ActionEvent;
 
 public class CustomerLoginPage {
@@ -99,16 +103,31 @@ public class CustomerLoginPage {
 					ResultSet r = statement.executeQuery();
 					r.next();
 					if (r.getBoolean(1)) {
-						query = "SELECT customer_id FROM customer WHERE email = ?";
+						query = "SELECT customer_id, email, first_name, last_name, phone_number, gender, age, profession, income_level, city, first_visit_date   FROM customer WHERE email = ?";
 						PreparedStatement p = conn.prepareStatement(query);
 						p.clearParameters();
 						p.setString(1, emailField.getText());
 						r = p.executeQuery();
-						r.next();
-						
-						CustomerMainPage user_main_page = new CustomerMainPage(r.getInt(1), conn);
-						user_main_page.showFrame();
-						frame.setVisible(false);
+						if (r.next()) {
+						    Customer customer = new Customer(
+						        r.getInt("customer_id"),
+						        r.getString("email"),
+						        r.getString("first_name"),
+						        r.getString("last_name"),
+						        r.getString("phone_number"),
+						        r.getString("gender"),
+						        r.getInt("age"),
+						        r.getString("profession"),
+						        r.getString("income_level"),
+						        r.getString("city"),
+						        r.getTimestamp("first_visit_date")
+						    );
+						    
+						    System.out.print(customer.toString());
+						    CustomerMainPage user_main_page = new CustomerMainPage(customer, conn);
+							user_main_page.showFrame();
+							frame.setVisible(false);
+						} 
 					} else {
 						lblNewLabel.setVisible(true);
 					}
@@ -142,6 +161,7 @@ public class CustomerLoginPage {
 		lblNewLabel.setBounds(20, 199, 325, 44);
 		frame.getContentPane().add(lblNewLabel);
 	}
+
 
 	public void showFrame() {
 		frame.setVisible(true);
