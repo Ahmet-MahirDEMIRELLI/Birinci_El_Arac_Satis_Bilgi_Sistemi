@@ -28,7 +28,7 @@ public class PriceOfferRequestPage {
 						PriceOfferRequestPage window = new PriceOfferRequestPage(new Customer(), conn);
 						window.frame.setVisible(true);
 					} catch (Exception e) {
-						e.printStackTrace();
+						e.printStackTrace(); 
 					}
 				}
 			});
@@ -65,34 +65,65 @@ public class PriceOfferRequestPage {
         frame.add(Box.createRigidArea(new Dimension(0, 20)));
         frame.add(submitButton);
 
-        submitButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String selectedVehicle = (String) vehicleCombo.getSelectedItem();
-                if (selectedVehicle != null) {
-                    try {
-                        int vehicleId = Integer.parseInt(selectedVehicle.split("-")[0].trim());
-                        PriceOfferRequest request = new PriceOfferRequest(customer.getCustomerId(), vehicleId, LocalDate.now(), conn);
-                        if (request.processRequest(customer.getCustomerId(), vehicleId, LocalDate.now())) {
-                            JOptionPane.showMessageDialog(frame, "Teklif isteği başarıyla gönderildi.");
-                        } else {
-                            JOptionPane.showMessageDialog(frame, "İstek gönderilemedi.");
-                        }
-                    } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(frame, "Araç bilgisi okunamadı.");
-                    }
-                }
-            }
-        });
+        submitButton.addActionListener(e -> {
+            String selectedVehicle = (String) vehicleCombo.getSelectedItem();
+            if (selectedVehicle != null) {
+                try {
+                    int vehicleId = Integer.parseInt(selectedVehicle.split("-")[0].trim());
 
-        // Geri Butonu
-        JButton backButton = new JButton("Geri");
-        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        backButton.setFocusable(false);
-        frame.add(Box.createRigidArea(new Dimension(0, 20)));
-        frame.add(backButton);
-        backButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose(); 
+                    // 1. Önce, reddedilmemiş ve beklemede olan son istek var mı?
+                    String requestQuery = """
+                        SELECT r.request_id, r.status, 
+					        (SELECT po.offer_date 
+					         FROM price_offers po 
+					         WHERE po.request_id = r.request_id 
+					         ORDER BY po.offer_date DESC 
+					         LIMIT 1) AS offer_date
+					    FROM requests r
+					    WHERE r.user_id = ? AND r.vehicle_id = ? AND r.request_type = 'price_offer'
+					    ORDER BY r.request_date DESC
+					    LIMIT 1
+                    """;
+
+                    PreparedStatement reqStmt = conn.prepareStatement(requestQuery);
+                    reqStmt.setInt(1, customer.getCustomerId());
+                    reqStmt.setInt(2, vehicleId);
+                    ResultSet rs = reqStmt.executeQuery();
+
+                    if (rs.next()) {
+                        String status = rs.getString("status");
+                        Date offerDateSql = rs.getDate("offer_date");
+
+                        // Eğer status 'pending' ise uyarı ver
+                        if ("pending".equalsIgnoreCase(status)) {
+                            JOptionPane.showMessageDialog(frame,"Daha önce teklif isteği gönderildi, lütfen teklif verilmesini bekleyin.");
+                            return;
+                        }
+
+                        // Eğer status 'approved' ve teklif hâlâ geçerliyse (30 gün içinde)
+                        if (!"rejected".equalsIgnoreCase(status) && offerDateSql != null) {
+                            LocalDate offerDate = offerDateSql.toLocalDate();
+                            if (!offerDate.isBefore(LocalDate.now().minusDays(30))) {
+                                JOptionPane.showMessageDialog(frame,"Bu araç için zaten geçerli bir teklif bulunmaktadır.");
+                                return;
+                            }
+                        }
+                    }
+
+                    // Yukarıdaki koşullar sağlanmadıysa, yeni istek gönderilebilir
+                    PriceOfferRequest request = new PriceOfferRequest(customer.getCustomerId(), vehicleId, LocalDate.now(), conn);
+                    if (request.processRequest(customer.getCustomerId(), vehicleId, LocalDate.now())) {
+                        JOptionPane.showMessageDialog(frame, "Teklif isteği başarıyla gönderildi.");
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "İstek gönderilemedi.");
+                    }
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(frame, "Araç bilgisi okunamadı.");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(frame, "Teklif kontrolü sırasında hata oluştu.");
+                }
             }
         });
     }
