@@ -29,8 +29,9 @@ public class PullCarFromStockPage {
 	private static Connection conn;
 	private WarehouseOrDealer dealer;
 	private JComboBox<String> vehicleSelector;
-	ArrayList<VehicleStock> vehicleStockList = new ArrayList<>();
-	ArrayList<Vehicle> vehicles = new ArrayList<>();
+	private ArrayList<VehicleStock> vehicleStockList = new ArrayList<>();
+	private ArrayList<Vehicle> vehicles = new ArrayList<>();
+	private ArrayList<Integer> vehicleIdMap = new ArrayList<>();
 	
 	/**
 	 * Launch the application.
@@ -82,7 +83,7 @@ public class PullCarFromStockPage {
 	    frame.getContentPane().add(vehicleSelector);
 
 	    // Araçları listeye doldur
-	    ArrayList<Integer> vehicleIdMap = new ArrayList<>();
+	    vehicleIdMap = new ArrayList<>();
 	    for (VehicleStock vs : vehicleStockList) {
 	        for (Vehicle v : vehicles) {
 	            if (v.getVehicleId() == vs.getVehicleId()) {
@@ -198,6 +199,7 @@ public class PullCarFromStockPage {
 		vehicleStockList = getVehicleStock();
 	    vehicles = getVehicles();
 	    vehicleSelector.removeAllItems();
+	    vehicleIdMap.removeAll(vehicleIdMap);
 	    for (VehicleStock vs : vehicleStockList) {
 	        for (Vehicle v : vehicles) {
 	            if (v.getVehicleId() == vs.getVehicleId()) {
@@ -208,6 +210,7 @@ public class PullCarFromStockPage {
 	                    v.getPckg(),
 	                    v.getPrice(),
 	                    vs.getStock());
+	                vehicleIdMap.add(v.getVehicleId()); // index -> vehicle_id eşlemesi
 	                vehicleSelector.addItem(item);
 	                break;
 	            }
