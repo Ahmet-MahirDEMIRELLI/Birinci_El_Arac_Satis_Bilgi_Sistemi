@@ -65,6 +65,12 @@ public class testWarehouseChangePassword {
 
     @AfterAll
     static void tearDown() throws Exception {
+    	  // Test kullanıcı sil
+        PreparedStatement deleteUser = conn.prepareStatement(
+            "DELETE FROM warehouse_or_dealer WHERE id = ?");
+        deleteUser.setInt(1, TEST_ID);
+        deleteUser.executeUpdate();
+        
         if (conn != null) conn.close();
     }
 }
