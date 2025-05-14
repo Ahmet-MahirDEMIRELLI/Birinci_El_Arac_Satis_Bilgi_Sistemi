@@ -74,7 +74,7 @@ public class CustomerMainPage {
 			}
 		});
 		offerButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-		offerButton.setBounds(100, 30, 200, 30);
+		offerButton.setBounds(100, 130, 200, 30);
 		frame.getContentPane().add(offerButton);
 		
 		JButton offerStatusButton = new JButton("Fiyat Tekliflerim");
@@ -86,7 +86,7 @@ public class CustomerMainPage {
 			}
 		});
 		offerStatusButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-		offerStatusButton.setBounds(350, 30, 200, 30);
+		offerStatusButton.setBounds(350, 130, 200, 30);
 		frame.getContentPane().add(offerStatusButton);
 		
 		JButton testDriveButton = new JButton("Test Sürüşü Talep Et");
@@ -122,7 +122,7 @@ public class CustomerMainPage {
 			}
 		});
 		orderButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-		orderButton.setBounds(100, 130, 200, 30);
+		orderButton.setBounds(100, 180, 200, 30);
 		frame.getContentPane().add(orderButton);
 		
 		JButton orderStatusButton = new JButton("Sipariş Durumlarım");
@@ -134,10 +134,10 @@ public class CustomerMainPage {
 			}
 		});
 		orderStatusButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-		orderStatusButton.setBounds(350, 130, 200, 30);
+		orderStatusButton.setBounds(350, 180, 200, 30);
 		frame.getContentPane().add(orderStatusButton);
 		
-		JButton myCarsButton = new JButton("Arabalarım");
+		JButton myCarsButton = new JButton("Araçlarım");
 		myCarsButton.setFocusable(false);
 		myCarsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -146,31 +146,43 @@ public class CustomerMainPage {
 			}
 		});
 		myCarsButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-		myCarsButton.setBounds(100, 180, 200, 30);
+		myCarsButton.setBounds(100, 30, 200, 30);
 		frame.getContentPane().add(myCarsButton);
+		
+		JButton allVehiclesButton = new JButton("Bayideki Araçlar");
+		allVehiclesButton.setFocusable(false);
+		allVehiclesButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DealerVehiclePage dealerVehiclePage = new DealerVehiclePage(conn);
+				dealerVehiclePage.showFrame();
+			}
+		});
+		allVehiclesButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		allVehiclesButton.setBounds(350, 30, 200, 30);
+		frame.getContentPane().add(allVehiclesButton);
 		
 		JButton changePasswordButton = new JButton("Şifre Değiştir");
 		changePasswordButton.setFocusable(false);
 		changePasswordButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new CustomerChangePassword(conn, customer);
+				new CustomerChangePassword(conn, customer.getCustomerId());
 			}
 		});
 		changePasswordButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-		changePasswordButton.setBounds(350, 180, 200, 30);
+		changePasswordButton.setBounds(100, 230, 200, 30);
 		frame.getContentPane().add(changePasswordButton);
 		
 		JButton returnButton = new JButton("Çıkış Yap");
 		returnButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);
 				StartPage start_page;
 				start_page = new StartPage(conn);
 				start_page.showFrame();
+				frame.setVisible(false); 
 			}
 		});
 		returnButton.setFont(new Font("Tahoma", Font.BOLD, 18));
-		returnButton.setBounds(225, 230, 200, 30);
+		returnButton.setBounds(350, 230, 200, 30);
 		frame.getContentPane().add(returnButton);
 		returnButton.setFocusable(false);
 		
