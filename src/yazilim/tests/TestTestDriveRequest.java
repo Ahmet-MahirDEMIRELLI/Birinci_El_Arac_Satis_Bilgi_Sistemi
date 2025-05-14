@@ -24,7 +24,7 @@ class TestTestDriveRequest {
 
     @BeforeAll
     static void setUpBeforeClass() throws Exception {
-        conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "password");
+        conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
 
         testCustomer = new Customer(TEST_USER_ID, "testuser@example.com", "Test", "User", "555555555", "male", 20, "tester", "high", "Istanbul", new Timestamp(System.currentTimeMillis()));
         testVehicle = new Vehicle(TEST_VEHICLE_ID, "MarkaX", "ModelY", 2024, "Basic", new BigDecimal("25000.00"));
