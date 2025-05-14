@@ -1,6 +1,9 @@
 package yazilim;
 
 import javax.swing.*;
+
+import yazilim.classes.WarehouseOrDealer;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigDecimal;
@@ -10,7 +13,7 @@ import java.util.ArrayList;
 public class DealerRequestPage {
     private JFrame frame;
     private Connection conn;
-    private int dealerId;
+    private WarehouseOrDealer dealer;
     private DefaultListModel<String> priceModel = new DefaultListModel<>();
     private DefaultListModel<String> testDriveModel = new DefaultListModel<>();
     private JList<String> priceList;
@@ -18,9 +21,9 @@ public class DealerRequestPage {
     private ArrayList<Integer> priceRequestIds = new ArrayList<>();
     private ArrayList<Integer> testDriveRequestIds = new ArrayList<>();
 
-    public DealerRequestPage(Connection conn, int dealerId) {
+    public DealerRequestPage(Connection conn, WarehouseOrDealer dealer) {
         this.conn = conn;
-        this.dealerId = dealerId;
+        this.dealer = dealer;
         initialize();
     }
 

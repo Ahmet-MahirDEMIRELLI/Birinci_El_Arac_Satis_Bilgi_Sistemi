@@ -1,6 +1,9 @@
 package yazilim;
 
 import javax.swing.*;
+
+import yazilim.classes.Customer;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
@@ -8,11 +11,11 @@ import java.sql.*;
 public class CustomerChangePassword {
     private JFrame frame;
     private Connection conn;
-    private int userId;
+    private Customer customer;
 
-    public CustomerChangePassword(Connection conn, int userId) {
+    public CustomerChangePassword(Connection conn, Customer customer) {
         this.conn = conn;
-        this.userId = userId;
+        this.customer = customer;
         initialize();
     }
 
@@ -72,7 +75,7 @@ public class CustomerChangePassword {
                         "UPDATE customer SET password_customer = ? WHERE customer_id = ? AND password_customer = ?"
                     );
                     ps.setString(1, yeni);
-                    ps.setInt(2, userId);
+                    ps.setInt(2, customer.getCustomerId());
                     ps.setString(3, eski);
 
                     int result = ps.executeUpdate();

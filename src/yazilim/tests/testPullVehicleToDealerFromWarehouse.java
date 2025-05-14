@@ -2,6 +2,7 @@ package yazilim.tests;
 
 import org.junit.jupiter.api.*;
 import yazilim.PullCarFromStockPage;
+import yazilim.classes.WarehouseOrDealer;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class testPullVehicleToDealerFromWarehouse {
     private static Connection conn;
     private PullCarFromStockPage page;
+    private WarehouseOrDealer dealer = new WarehouseOrDealer(2, "dealer@example.com", "DEALER");
 
     @BeforeAll
     public static void setupConnection() throws Exception {
@@ -22,7 +24,7 @@ public class testPullVehicleToDealerFromWarehouse {
 
     @BeforeEach
     public void init() {
-        page = new PullCarFromStockPage(1, conn);
+        page = new PullCarFromStockPage(dealer, conn);
     }
 
     @Test

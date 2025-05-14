@@ -9,6 +9,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+
+import yazilim.classes.WarehouseOrDealer;
+
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -99,14 +102,16 @@ public class WarehouseLoginPage {
 					ResultSet r = statement.executeQuery();
 					r.next();
 					if (r.getBoolean(1)) {
-						query = "SELECT id FROM warehouse_or_dealer WHERE email = ?";
+						query = "SELECT id FROM warehouse_or_dealer WHERE email = ? AND type = 'WAREHOUSE';";
 						PreparedStatement p = conn.prepareStatement(query);
 						p.clearParameters();
 						p.setString(1, emailField.getText());
 						r = p.executeQuery();
 						r.next();
 						
-						WarehouseMainPage warehouse_main_page = new WarehouseMainPage(r.getInt(1), conn);
+						WarehouseOrDealer warehouse = new WarehouseOrDealer(r.getInt(1), emailField.getText(), "WAREHOUSE");
+						
+						WarehouseMainPage warehouse_main_page = new WarehouseMainPage(warehouse, conn);
 						warehouse_main_page.showFrame();
 						frame.setVisible(false);
 					} else {

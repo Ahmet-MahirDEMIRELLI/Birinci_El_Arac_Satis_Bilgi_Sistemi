@@ -8,6 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import yazilim.classes.WarehouseOrDealer;
+
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,7 +21,7 @@ import java.awt.event.ActionEvent;
 public class WarehouseMainPage {
 	private JFrame frame;
 	private static Connection conn;
-	private int warehouseId;
+	private WarehouseOrDealer warehouse;
 	
 	/**
 	 * Launch the application.
@@ -29,7 +31,7 @@ public class WarehouseMainPage {
 			public void run() {
 				try {
 					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-					WarehouseMainPage window = new WarehouseMainPage(1, conn);
+					WarehouseMainPage window = new WarehouseMainPage(new WarehouseOrDealer(), conn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -40,15 +42,15 @@ public class WarehouseMainPage {
 	
 	public WarehouseMainPage() throws SQLException {
 		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-		warehouseId = 1;
+		warehouse = new WarehouseOrDealer();
 		initialize();
 	}
 
 	/**
 	 * Create the application.
 	 */
-	public WarehouseMainPage(int wareHouseId, Connection parent_conn) {
-		warehouseId = wareHouseId;
+	public WarehouseMainPage(WarehouseOrDealer wrhs, Connection parent_conn) {
+		warehouse = wrhs;
 		conn = parent_conn;
 		initialize();
 	}
@@ -74,8 +76,9 @@ public class WarehouseMainPage {
 	    newCarButton.setFocusable(false);
 	    newCarButton.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	            AddCarToStockPage addCarToStockPage = new AddCarToStockPage(warehouseId, conn);
+	            AddCarToStockPage addCarToStockPage = new AddCarToStockPage(warehouse, conn);
 	            addCarToStockPage.showFrame();
+	            frame.setVisible(false);
 	        }
 	    });
 	    frame.getContentPane().add(newCarButton);
@@ -102,7 +105,7 @@ public class WarehouseMainPage {
 	    changePasswordButton.setFocusable(false);
 	    changePasswordButton.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	            new WarehouseChangePassword(conn, warehouseId);
+	            new WarehouseChangePassword(conn, warehouse);
 	        }
 	    });
 	    frame.getContentPane().add(changePasswordButton);

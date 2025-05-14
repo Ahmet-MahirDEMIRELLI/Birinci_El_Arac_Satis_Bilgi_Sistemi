@@ -1,6 +1,9 @@
 package yazilim;
 
 import javax.swing.*;
+
+import yazilim.classes.WarehouseOrDealer;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
@@ -12,9 +15,11 @@ public class DealerOrderApprovalPage {
     private DefaultListModel<String> orderModel = new DefaultListModel<>();
     private JList<String> orderList;
     private ArrayList<Integer> orderRequestIds = new ArrayList<>();
+    private WarehouseOrDealer dealer;
 
-    public DealerOrderApprovalPage(Connection conn, int dealerId) {
+    public DealerOrderApprovalPage(Connection conn, WarehouseOrDealer dealer) {
         this.conn = conn;
+        this.dealer = dealer;
         initialize();
     }
 

@@ -7,6 +7,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import yazilim.classes.WarehouseOrDealer;
+
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,7 +21,7 @@ import java.awt.event.ActionEvent;
 public class DealerMainPage {
 	private JFrame frame;
 	private static Connection conn;
-	private int dealerId;
+	private WarehouseOrDealer dealer;
 	
 	/**
 	 * Launch the application.
@@ -28,7 +31,7 @@ public class DealerMainPage {
 			public void run() {
 				try {
 					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-					DealerMainPage window = new DealerMainPage(1, conn);
+					DealerMainPage window = new DealerMainPage(new WarehouseOrDealer(), conn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -39,15 +42,15 @@ public class DealerMainPage {
 	
 	public DealerMainPage() throws SQLException {
 		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-		dealerId = 1;
+		dealer = new WarehouseOrDealer();
 		initialize();
 	}
 
 	/**
 	 * Create the application.
 	 */
-	public DealerMainPage(int dlrId, Connection parent_conn) {
-		dealerId = dlrId;
+	public DealerMainPage(WarehouseOrDealer dlr, Connection parent_conn) {
+		dealer = dlr;
 		conn = parent_conn;
 		initialize();
 	}
@@ -71,7 +74,7 @@ public class DealerMainPage {
 	    showRequestsButton.setFont(new Font("Tahoma", Font.BOLD, 16));
 	    showRequestsButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
 	    showRequestsButton.setFocusable(false);
-	    showRequestsButton.addActionListener(e -> new DealerRequestPage(conn, dealerId));
+	    showRequestsButton.addActionListener(e -> new DealerRequestPage(conn, dealer));
 	    frame.getContentPane().add(showRequestsButton);
 
 	    y += 60;
@@ -96,7 +99,7 @@ public class DealerMainPage {
 	    getFromStockButton.setFont(new Font("Tahoma", Font.BOLD, 16));
 	    getFromStockButton.setFocusable(false);
 	    getFromStockButton.addActionListener(e -> {
-	        PullCarFromStockPage pullCarFromStockPage = new PullCarFromStockPage(dealerId, conn);
+	        PullCarFromStockPage pullCarFromStockPage = new PullCarFromStockPage(dealer, conn);
 	        pullCarFromStockPage.showFrame();
 	    });
 	    frame.getContentPane().add(getFromStockButton);
@@ -107,7 +110,7 @@ public class DealerMainPage {
 	    changePasswordButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
 	    changePasswordButton.setFont(new Font("Tahoma", Font.BOLD, 16));
 	    changePasswordButton.setFocusable(false);
-	    changePasswordButton.addActionListener(e -> new DealerChangePassword(conn, dealerId));
+	    changePasswordButton.addActionListener(e -> new DealerChangePassword(conn, dealer));
 	    frame.getContentPane().add(changePasswordButton);
 
 	    y += 60;
@@ -116,7 +119,7 @@ public class DealerMainPage {
 	    approveOrdersButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
 	    approveOrdersButton.setFont(new Font("Tahoma", Font.BOLD, 16));
 	    approveOrdersButton.setFocusable(false);
-	    approveOrdersButton.addActionListener(e -> new DealerOrderApprovalPage(conn, dealerId));
+	    approveOrdersButton.addActionListener(e -> new DealerOrderApprovalPage(conn, dealer));
 	    frame.getContentPane().add(approveOrdersButton);
 
 	    y += 60;

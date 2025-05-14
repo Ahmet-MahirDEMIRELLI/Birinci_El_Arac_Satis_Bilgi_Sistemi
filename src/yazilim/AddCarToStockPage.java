@@ -13,6 +13,8 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
+import yazilim.classes.WarehouseOrDealer;
+
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -27,7 +29,7 @@ import java.awt.event.ActionEvent;
 public class AddCarToStockPage {
 	private JFrame frame;
 	private static Connection conn;
-	private int warehouseId;
+	private WarehouseOrDealer warehouse;
 	private JTextField brandField;
 	private JTextField modelField;
 	private JTextField packageField;
@@ -51,7 +53,7 @@ public class AddCarToStockPage {
 			public void run() {
 				try {
 					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-					AddCarToStockPage window = new AddCarToStockPage(1, conn);
+					AddCarToStockPage window = new AddCarToStockPage(new WarehouseOrDealer(), conn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -68,9 +70,9 @@ public class AddCarToStockPage {
 	/**
 	 * Create the application.
 	 */
-	public AddCarToStockPage(int wareHouseId, Connection parent_conn) {
+	public AddCarToStockPage(WarehouseOrDealer wrhs, Connection parent_conn) {
 		conn = parent_conn;
-		warehouseId = wareHouseId;
+		warehouse = wrhs;
 		initialize();
 	}
 
@@ -175,7 +177,7 @@ public class AddCarToStockPage {
 		JButton returnButton = new JButton("Geri Dön");
 		returnButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				WarehouseMainPage warehouseMainPage = new WarehouseMainPage(warehouseId, conn);
+				WarehouseMainPage warehouseMainPage = new WarehouseMainPage(warehouse, conn);
 				warehouseMainPage.showFrame();
 				frame.setVisible(false);
 			}

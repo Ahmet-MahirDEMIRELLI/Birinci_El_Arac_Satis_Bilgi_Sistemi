@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 
 import yazilim.AddCarToStockPage;
 import yazilim.PullCarFromStockPage;
+import yazilim.classes.WarehouseOrDealer;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class testAddCarToStock {
     private static Connection conn;
     private AddCarToStockPage page;
+    private WarehouseOrDealer warehouse = new WarehouseOrDealer(2, "warehouse@example.com", "WAREHOUSE");
 
     @BeforeAll
     public static void setupConnection() throws Exception {
@@ -25,7 +27,7 @@ public class testAddCarToStock {
 
     @BeforeEach
     public void init() {
-        page = new AddCarToStockPage(2, conn);
+        page = new AddCarToStockPage(warehouse, conn);
     }
 
     @Test
