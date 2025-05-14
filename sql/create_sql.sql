@@ -70,7 +70,7 @@ CREATE TABLE requests (
     request_type VARCHAR(20) NOT NULL CHECK (request_type IN ('test_drive', 'price_offer', 'order')),
     vehicle_id INT REFERENCES vehicle(vehicle_id),
     request_date DATE NOT NULL,
-    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected'))
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected'))
 );
 
 CREATE OR REPLACE FUNCTION register_customer(
@@ -193,36 +193,7 @@ $$ LANGUAGE plpgsql;
 
 
 
-<<<<<<< HEAD
-ALTER TABLE requests DROP CONSTRAINT requests_status_check;
 
-
-ALTER TABLE requests ADD CONSTRAINT requests_status_check
-CHECK (status IN ('pending', 'accepted', 'rejected'));
-
-
-
-ALTER TABLE requests DROP CONSTRAINT requests_check;
-
-ALTER TABLE requests ADD CONSTRAINT requests_check
-CHECK (
-  (request_type = 'price_offer')
-  OR
-  (request_type = 'test_drive' AND price IS NULL)
-);
-
-ALTER TABLE requests DROP COLUMN price;
-
-ALTER TABLE requests DROP CONSTRAINT requests_request_type_check; 
-ALTER TABLE requests ADD CONSTRAINT requests_request_type_check 
-	CHECK 
-	(request_type IN ('test_drive', 'price_offer', 'order')
-	);
-
-
-
-=======
->>>>>>> 04e8e89 (kodlar güncellendi)
 CREATE TABLE price_offers (
     offer_id SERIAL PRIMARY KEY,
     request_id INT NOT NULL REFERENCES requests(request_id),
