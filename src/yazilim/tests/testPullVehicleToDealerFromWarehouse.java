@@ -2,65 +2,159 @@ package yazilim.tests;
 
 import org.junit.jupiter.api.*;
 import yazilim.PullCarFromStockPage;
+import yazilim.classes.Vehicle;
 import yazilim.classes.WarehouseOrDealer;
-
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.sql.Timestamp;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class testPullVehicleToDealerFromWarehouse {
     private static Connection conn;
     private PullCarFromStockPage page;
-    private WarehouseOrDealer dealer = new WarehouseOrDealer(2, "dealer@example.com", "DEALER");
-
+    private final static WarehouseOrDealer dealer = new WarehouseOrDealer(340, "dealer@example.com", "DEALER");
+    private final static Vehicle vehicle_1 = new Vehicle(124, "Volkswagen", "Tiguan", 2021, "Full", BigDecimal.valueOf(1500000.00));
+    private final static Vehicle vehicle_2 = new Vehicle(125, "Ford", "Focus", 2021, "Full", BigDecimal.valueOf(1500000.00));
+    private static int stockId = 100;
+    
+    
     @BeforeAll
-    public static void setupConnection() throws Exception {
+    public static void setUp() throws SQLException {
+    	System.out.println("\n=== Testing Pull Vehicle To Dealer From Warehouse ===");
         conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-    }
 
+        try (PreparedStatement stmt = conn.prepareStatement(
+         "INSERT INTO warehouse_or_dealer (id, email, password, type) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING")) {
+            stmt.setInt(1, dealer.getId());
+            stmt.setString(2, dealer.getEmail());
+            stmt.setString(3, "testpassword");
+            stmt.setString(4, dealer.getType());
+            stmt.executeUpdate();
+        }
+
+        // Araç 1 ekle
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "INSERT INTO vehicle (vehicle_id, brand, model, year, package, price) VALUES (?, ?, ?, ?, ? ,?) ON CONFLICT DO NOTHING")) {
+            stmt.setInt(1, vehicle_1.getVehicleId());
+            stmt.setString(2, vehicle_1.getBrand());
+            stmt.setString(3, vehicle_1.getModel());
+            stmt.setInt(4, vehicle_1.getYear());
+            stmt.setString(5, vehicle_1.getPckg());
+            stmt.setBigDecimal(6, vehicle_1.getPrice());
+            stmt.executeUpdate();
+        }
+
+        // Araç 1 stoğa ekle
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "INSERT INTO stock (stock_id, vehicle_id, location_type, quantity, updated_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING")) {
+            stmt.setInt(1, stockId);
+            stmt.setInt(2, vehicle_1.getVehicleId());
+            stmt.setString(3, "warehouse");
+            stmt.setInt(4, 2);
+            stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
+            stmt.executeUpdate();
+        }
+        
+     // Araç 2 ekle
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "INSERT INTO vehicle (vehicle_id, brand, model, year, package, price) VALUES (?, ?, ?, ?, ? ,?) ON CONFLICT DO NOTHING")) {
+            stmt.setInt(1, vehicle_2.getVehicleId());
+            stmt.setString(2, vehicle_2.getBrand());
+            stmt.setString(3, vehicle_2.getModel());
+            stmt.setInt(4, vehicle_2.getYear());
+            stmt.setString(5, vehicle_2.getPckg());
+            stmt.setBigDecimal(6, vehicle_2.getPrice());
+            stmt.executeUpdate();
+        }
+
+        // Araç 2 stoğa ekle
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "INSERT INTO stock (stock_id, vehicle_id, location_type, quantity, updated_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING")) {
+            stmt.setInt(1, stockId + 1);
+            stmt.setInt(2, vehicle_2.getVehicleId());
+            stmt.setString(3, "dealer");
+            stmt.setInt(4, 2);
+            stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
+            stmt.executeUpdate();
+        }
+    }
+    
     @BeforeEach
     public void init() {
-        page = new PullCarFromStockPage(dealer, conn);
+    	page = new PullCarFromStockPage(dealer, conn);
     }
-
+    
+    // Depodan araç çekiyor
     @Test
     public void testPullVehicle_1() {
-        int vehicleId = 1;
-        boolean result = page.pullVehicleToDealerFromWarehouse(vehicleId);
-        assertTrue(result, "Araç çekme işlemi başarılı olmalı. (AraÇ ID: 1)");
-        
-        int expectedStock = 9;
-        int actualStock = getWarehouseStockForVehicle(vehicleId);
-        assertEquals(expectedStock, actualStock, "Depodaki stok 9 olmalı.");
+    	System.out.println("\n=== testPullVehicle_1 Started ===");
+        boolean result = page.pullVehicleToDealerFromWarehouse(vehicle_1.getVehicleId());
+        assertTrue(result, "Araç çekme işlemi başarılı olmalı. (AraÇ ID: " + vehicle_1.getVehicleId() + ")");
+        System.out.println(vehicle_1.getVehicleId() + " Id'li aracı bayiye çekme işlemi beklendiği gibi başarılı oldu.");
+        int expectedStock = 1;
+        int actualStock = getWarehouseStockForVehicle(vehicle_1.getVehicleId());
+        assertEquals(expectedStock, actualStock, "Depodaki stok 1 olmalı.");
+        System.out.println(vehicle_1.getVehicleId() + " Id'li araç için stock=1 kaldığı doğrulandı.");
     }
-
+    
+    // Zaten bayide olan aracı çekmeye çalışıyor
     @Test
     public void testPullVehicle_2() {
-        int vehicleId = 2;
-        boolean result = page.pullVehicleToDealerFromWarehouse(vehicleId);
-        assertFalse(result, "Araç çekme işlemi başarısız olmalı. (AraÇ ID: 2)");
+    	System.out.println("\n=== testPullVehicle_2 Started ===");
+        boolean result = page.pullVehicleToDealerFromWarehouse(vehicle_2.getVehicleId());
+        assertFalse(result, "Araç çekme işlemi başarısız olmalı. (AraÇ ID: "+ vehicle_2.getVehicleId() + ")");
+        System.out.println(vehicle_1.getVehicleId() + " Id'li araç zaten bayide olduğu için çekme işlemi beklendiği gibi başarısız oldu.");
     }
-
+    
+    // Depoda 1 adet kalan aracı çekiyor
     @Test
     public void testPullVehicle_3() {
-        int vehicleId = 5;
-        boolean result = page.pullVehicleToDealerFromWarehouse(vehicleId);
-        assertTrue(result, "Araç çekme işlemi başarılı olmalı (AraÇ ID: 5)");
-        
-        int remainingRows = getWarehouseStockRowCount(vehicleId);
-        assertEquals(0, remainingRows, "Depoda bu araçtan kayıt kalmamalı (Araç ID: 5)");
+    	System.out.println("\n=== testPullVehicle_3 Started ===");
+        boolean result = page.pullVehicleToDealerFromWarehouse(vehicle_1.getVehicleId());
+        assertTrue(result, "Araç çekme işlemi başarılı olmalı (AraÇ ID: " + vehicle_1.getVehicleId() + ")");
+        System.out.println(vehicle_1.getVehicleId() + " Id'li aracı bayiye çekme işlemi beklendiği gibi başarılı oldu.");
+        int remainingRows = getWarehouseStockRowCount(vehicle_1.getVehicleId());
+        assertEquals(0, remainingRows, "Depoda bu araçtan kayıt kalmamalı (Araç ID: " + vehicle_1.getVehicleId() + ")");
+        System.out.println(vehicle_1.getVehicleId() + " Id'li araçtan depoda kalmadığı doğrulandı.");
     }
-
+    
+    
     @AfterAll
-    public static void closeConnection() throws Exception {
+    public static void tearDown() throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM stock WHERE vehicle_id = ?")) {
+            stmt.setInt(1, vehicle_1.getVehicleId());
+            stmt.executeUpdate();
+        }
+        
+        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM stock WHERE vehicle_id = ?")) {
+            stmt.setInt(1, vehicle_2.getVehicleId());
+            stmt.executeUpdate();
+        }
+        
+        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM vehicle WHERE vehicle_id = ?")) {
+            stmt.setInt(1, vehicle_1.getVehicleId());
+            stmt.executeUpdate();
+        }
+        
+        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM vehicle WHERE vehicle_id = ?")) {
+            stmt.setInt(1, vehicle_2.getVehicleId());
+            stmt.executeUpdate();
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM warehouse_or_dealer WHERE id = ?")) {
+            stmt.setInt(1, dealer.getId());
+            stmt.executeUpdate();
+        }
+
         if (conn != null && !conn.isClosed()) {
             conn.close();
         }
     }
+    
     
     private int getWarehouseStockForVehicle(int vehicleId) {
         int stock = -1;
