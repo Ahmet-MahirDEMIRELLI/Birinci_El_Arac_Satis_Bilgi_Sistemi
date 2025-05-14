@@ -64,6 +64,8 @@ public class TestDriveStatusPage {
         backButton.setFocusable(false);
         backButton.addActionListener(e -> {
             frame.dispose();
+            CustomerMainPage mainPage = new CustomerMainPage(customer, conn);
+            mainPage.showFrame();
         });
 
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
@@ -102,7 +104,7 @@ public class TestDriveStatusPage {
     private String translateStatus(String status) {
         return switch (status) {
             case "pending"  -> "<html><span style='color:orange;'>Beklemede</span></html>";
-            case "accepted" -> "<html><span style='color:green;'>Sürüş Yapıldı</span></html>";
+            case "accepted" -> "<html><span style='color:green;'>Talep Onaylandı</span></html>";
             case "rejected" -> "<html><span style='color:red;'>Talep Reddedildi/Stokta Yok</span></html>";
             default         -> status;
         };

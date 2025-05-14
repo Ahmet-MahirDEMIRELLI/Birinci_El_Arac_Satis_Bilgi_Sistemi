@@ -2,6 +2,7 @@ package yazilim;
 
 import javax.swing.*;
 
+
 import yazilim.classes.Customer;
 import yazilim.requests.TestDriveRequest;
 
@@ -9,12 +10,15 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class TestDriveRequestPage {
     private JFrame frame;
     private JComboBox<String> vehicleCombo;
     private Customer customer;
 	private static Connection conn;
+	private JSpinner dateSpinner;
 	    
 	    /**
 		 * Launch the application.
@@ -42,12 +46,12 @@ public class TestDriveRequestPage {
     private void initialize() {
         frame = new JFrame("Test Sürüşü Talebi");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setBounds(100, 100, 500, 250);
+        frame.setBounds(100, 100, 500, 300);
         frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 
         JLabel titleLabel = new JLabel("Test Sürüşü Talep Etmek İstediğiniz Araç:");
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        frame.add(Box.createRigidArea(new Dimension(0, 30))); // Üst boşluk
+        frame.add(Box.createRigidArea(new Dimension(0, 20))); // Üst boşluk
         frame.add(titleLabel);
 
         vehicleCombo = new JComboBox<>();
@@ -56,6 +60,19 @@ public class TestDriveRequestPage {
         frame.add(Box.createRigidArea(new Dimension(0, 10))); 
         frame.add(vehicleCombo);
         loadVehicles();
+
+        JLabel dateLabel = new JLabel("Tarih Seçin:");
+        dateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        frame.add(Box.createRigidArea(new Dimension(0, 15)));
+        frame.add(dateLabel);
+
+        SpinnerDateModel dateModel = new SpinnerDateModel(new Date(), null, null, java.util.Calendar.DAY_OF_MONTH);
+        dateSpinner = new JSpinner(dateModel);
+        dateSpinner.setEditor(new JSpinner.DateEditor(dateSpinner, "dd-MM-yyyy"));
+        dateSpinner.setMaximumSize(new Dimension(150, 30));
+        dateSpinner.setAlignmentX(Component.CENTER_ALIGNMENT);
+        frame.add(Box.createRigidArea(new Dimension(0, 5)));
+        frame.add(dateSpinner);
 
         JButton submitButton = new JButton("Test Sürüşü Talep Et");
         submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -70,8 +87,13 @@ public class TestDriveRequestPage {
                 if (selectedVehicle != null) {
                     try {
                         int vehicleId = Integer.parseInt(selectedVehicle.split("-")[0].trim());
-                        LocalDate requestDate = LocalDate.now(); 
-                        
+                        Date selectedDate = (Date) dateSpinner.getValue();
+                        LocalDate requestDate = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                        if (requestDate.isBefore(LocalDate.now())) {
+                            JOptionPane.showMessageDialog(frame, "Geçmiş bir tarih seçemezsiniz!", "Geçersiz Tarih", JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+
                         TestDriveRequest request = new TestDriveRequest(customer.getCustomerId(), vehicleId, requestDate, conn);
                         if (request.processRequest(customer.getCustomerId(), vehicleId, requestDate)) {
                             JOptionPane.showMessageDialog(frame, "Test sürüşü talebi başarıyla gönderildi.");
@@ -93,9 +115,12 @@ public class TestDriveRequestPage {
 
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                frame.dispose();
+                frame.dispose(); 
+                CustomerMainPage mainPage = new CustomerMainPage(customer, conn);
+                mainPage.showFrame();
             }
         });
+
     }
 
     private void loadVehicles() {
