@@ -94,13 +94,11 @@ public class PriceOfferRequestPage {
                         String status = rs.getString("status");
                         Date offerDateSql = rs.getDate("offer_date");
 
-                        // Eğer status 'pending' ise uyarı ver
                         if ("pending".equalsIgnoreCase(status)) {
                             JOptionPane.showMessageDialog(frame,"Daha önce teklif isteği gönderildi, lütfen teklif verilmesini bekleyin.");
                             return;
                         }
 
-                        // Eğer status 'approved' ve teklif hâlâ geçerliyse (30 gün içinde)
                         if (!"rejected".equalsIgnoreCase(status) && offerDateSql != null) {
                             LocalDate offerDate = offerDateSql.toLocalDate();
                             if (!offerDate.isBefore(LocalDate.now().minusDays(30))) {
@@ -110,7 +108,6 @@ public class PriceOfferRequestPage {
                         }
                     }
 
-                    // Yukarıdaki koşullar sağlanmadıysa, yeni istek gönderilebilir
                     PriceOfferRequest request = new PriceOfferRequest(customer.getCustomerId(), vehicleId, LocalDate.now(), conn);
                     if (request.processRequest(customer.getCustomerId(), vehicleId, LocalDate.now())) {
                         JOptionPane.showMessageDialog(frame, "Teklif isteği başarıyla gönderildi.");
