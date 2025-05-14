@@ -125,11 +125,9 @@ public class PullCarFromStockPage {
 
 
 
-	    JButton returnButton = new JButton("Çıkış Yap");
+	    JButton returnButton = new JButton("Geri");
 	    returnButton.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	            StartPage start_page = new StartPage(conn);
-	            start_page.showFrame();
 	            frame.setVisible(false);
 	        }
 	    });
