@@ -63,8 +63,6 @@ public class PriceOfferStatusPage {
         backButton.setFocusable(false);
         backButton.addActionListener(e -> {
             frame.dispose();
-            CustomerMainPage mainPage = new CustomerMainPage(customer, conn);
-            mainPage.showFrame();
         });
 
         javax.swing.JPanel bottomPanel = new javax.swing.JPanel();

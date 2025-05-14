@@ -54,8 +54,6 @@ public class CustomerCarPage {
         backButton.setFocusable(false);
         backButton.addActionListener(e -> {
             frame.dispose();
-            CustomerMainPage mainPage = new CustomerMainPage(customer, conn);
-            mainPage.showFrame();
         });
 
         JPanel bottomPanel = new JPanel();

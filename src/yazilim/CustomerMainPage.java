@@ -163,10 +163,10 @@ public class CustomerMainPage {
 		JButton returnButton = new JButton("Çıkış Yap");
 		returnButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
 				StartPage start_page;
 				start_page = new StartPage(conn);
 				start_page.showFrame();
-				frame.setVisible(false);
 			}
 		});
 		returnButton.setFont(new Font("Tahoma", Font.BOLD, 18));
