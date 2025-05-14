@@ -45,6 +45,10 @@ public class CustomerRegisterPage {
 	private JLabel professionLabel;
 	private JLabel incomeLevelLabel;
 	private int newId;
+	
+	private JComboBox<String> genderComboBox;
+    private JSpinner ageSpinner;
+    private JComboBox<String> incomeLevelComboBox;
 
 	/**
 	 * Launch the application.
@@ -146,7 +150,7 @@ public class CustomerRegisterPage {
 		frame.getContentPane().add(passwordLabel);
 		
 		String[] genders = {"Erkek", "Kadın", "Belirtmek İstemiyorum"};
-		JComboBox<String> genderComboBox = new JComboBox<>(genders);
+		genderComboBox = new JComboBox<>(genders);
 		genderComboBox.setBounds(30, 250, 125, 25);
 		frame.getContentPane().add(genderComboBox);
 		genderLabel = new JLabel("Cinsiyet:");
@@ -155,7 +159,7 @@ public class CustomerRegisterPage {
 		frame.getContentPane().add(genderLabel);
 		
 		SpinnerNumberModel ageModel = new SpinnerNumberModel(18, 0, 120, 1);
-		JSpinner ageSpinner = new JSpinner(ageModel);
+		ageSpinner = new JSpinner(ageModel);
 		ageSpinner.setBounds(230, 250, 125, 25);
 		frame.getContentPane().add(ageSpinner);
 		ageLabel = new JLabel("Yaş:");
@@ -173,7 +177,7 @@ public class CustomerRegisterPage {
 		frame.getContentPane().add(professionLabel);
 		
 		String[] incomeLevels = {"Düşük", "Orta", "Yüksek"};
-		JComboBox<String> incomeLevelComboBox = new JComboBox<>(incomeLevels);
+		incomeLevelComboBox = new JComboBox<>(incomeLevels);
 		incomeLevelComboBox.setBounds(230, 310, 125, 25);
 		frame.getContentPane().add(incomeLevelComboBox);
 		incomeLevelLabel = new JLabel("Gelir Düzeyi:");
@@ -184,86 +188,16 @@ public class CustomerRegisterPage {
 		JButton registerButton = new JButton("Kayıt Ol");
 		registerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String query = "SELECT register_customer(?,?,?,?,?,?,?,?,?,?);";
-				PreparedStatement statement;
 				try {
-					if (nameField.getText().length() >= 3 && surnameField.getText().length() >= 3 && cityField.getText().length() >= 3
-							&& phoneField.getText().length() >= 3 && passwordField.getText().length() >= 3) {
-						if(phoneField.getText().length() == 10) {
-							statement = conn.prepareStatement(query);
-							statement.setString(1, emailField.getText());
-							statement.setString(2, passwordField.getText());
-							statement.setString(3, nameField.getText());
-							statement.setString(4, surnameField.getText());
-							statement.setString(5, phoneField.getText());
-							String selectedGender = (String) genderComboBox.getSelectedItem();;
-							switch (selectedGender) {
-							    case "Erkek":
-							    	statement.setString(6, "male");
-							        break;
-							    case "Kadın":
-							    	statement.setString(6, "female");
-							        break;
-							    case "Belirtmek İstemiyorum":
-							    	statement.setString(6, "other");
-							        break;
-							}
-							statement.setInt(7, (int) ageSpinner.getValue());
-							statement.setString(8, professionField.getText());
-							String selectedIncome = (String) incomeLevelComboBox.getSelectedItem();;
-							switch (selectedIncome) {
-							    case "Düşük":
-							    	statement.setString(9, "low");
-							        break;
-							    case "Orta":
-							    	statement.setString(9, "medium");
-							        break;
-							    case "Yüksek":
-							    	statement.setString(9, "high");
-							        break;
-							}
-							statement.setString(10, cityField.getText());
-							
-							ResultSet r = statement.executeQuery();
-							if (r.next()) {
-								JOptionPane.showMessageDialog(null, "Your new id is : " + r.getInt(1));
-								newId = r.getInt(1);
-								
-								query = "SELECT customer_id, email, first_name, last_name, phone_number, gender, age, profession, income_level, city, first_visit_date   FROM customer WHERE customer_id = ?";
-								PreparedStatement p = conn.prepareStatement(query);
-								p.clearParameters();
-								p.setInt(1, newId);
-								r = p.executeQuery();
-								if (r.next()) {
-								    Customer customer = new Customer(
-								        r.getInt("customer_id"),
-								        r.getString("email"),
-								        r.getString("first_name"),
-								        r.getString("last_name"),
-								        r.getString("phone_number"),
-								        r.getString("gender"),
-								        r.getInt("age"),
-								        r.getString("profession"),
-								        r.getString("income_level"),
-								        r.getString("city"),
-								        r.getTimestamp("first_visit_date")
-								    );
-								    System.out.println(customer.toString());
-									CustomerMainPage pg = new CustomerMainPage(customer, conn);
-									pg.showFrame();
-									frame.setVisible(false);
-								}
-							}
-						}
-						else {
-							JOptionPane.showMessageDialog(null, "Telefon numarası uzunluğu 10 olmalı.");
-						}
-					} else {
-						JOptionPane.showMessageDialog(null, "3 karakterden kısa bir veri girilemez.");
+					Customer customer = registerCustomerIfValid();
+					if (customer != null) {
+						System.out.println(customer.toString());
+						CustomerMainPage pg = new CustomerMainPage(customer, conn);
+						pg.showFrame();
+						frame.setVisible(false);
 					}
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
 				}
 			}
 		});
@@ -285,6 +219,156 @@ public class CustomerRegisterPage {
 		frame.getContentPane().add(returnButton);
 		returnButton.setFocusable(false);
 	}
+	
+	public Customer registerCustomerIfValid() throws SQLException {
+	    String query = "SELECT register_customer(?,?,?,?,?,?,?,?,?,?)";
+
+	    if (nameField.getText().length() >= 3 && surnameField.getText().length() >= 3 &&
+	        cityField.getText().length() >= 3 && phoneField.getText().length() >= 3 &&
+	        passwordField.getText().length() >= 3) {
+
+	        if (phoneField.getText().length() != 10) {
+	            JOptionPane.showMessageDialog(null, "Telefon numarası uzunluğu 10 olmalı.");
+	            return null;
+	        }
+
+	        
+	        String email = emailField.getText();
+
+	        if (isEmailAlreadyRegistered(email)) {
+	            JOptionPane.showMessageDialog(null, "Bu e-posta adresi ile zaten kayıt olunmuş.");
+	            return null;
+	        } 
+
+	        PreparedStatement statement = conn.prepareStatement(query);
+	        statement.setString(1, email);
+	        statement.setString(2, passwordField.getText());
+	        statement.setString(3, nameField.getText());
+	        statement.setString(4, surnameField.getText());
+	        statement.setString(5, phoneField.getText());
+
+	        String selectedGender = (String) genderComboBox.getSelectedItem();
+	        switch (selectedGender) {
+	            case "Erkek":
+	                statement.setString(6, "male");
+	                break;
+	            case "Kadın":
+	                statement.setString(6, "female");
+	                break;
+	            case "Belirtmek İstemiyorum":
+	                statement.setString(6, "other");
+	                break;
+	            default:
+	                statement.setString(6, "other");
+	                break;
+	        }
+
+	        statement.setInt(7, (int) ageSpinner.getValue());
+
+	        statement.setString(8, professionField.getText());
+
+	        String selectedIncome = (String) incomeLevelComboBox.getSelectedItem();
+	        switch (selectedIncome) {
+	            case "Düşük":
+	                statement.setString(9, "low");
+	                break;
+	            case "Orta":
+	                statement.setString(9, "medium");
+	                break;
+	            case "Yüksek":
+	                statement.setString(9, "high");
+	                break;
+	            default:
+	                statement.setString(9, "low");
+	                break;
+	        }
+
+	        statement.setString(10, cityField.getText());
+
+	        ResultSet r = statement.executeQuery();
+	        if (r.next()) {
+	            newId = r.getInt(1);
+	            JOptionPane.showMessageDialog(null, "Your new id is : " + newId);
+
+	            query = "SELECT customer_id, email, first_name, last_name, phone_number, gender, age, profession, income_level, city, first_visit_date FROM customer WHERE customer_id = ?";
+	            PreparedStatement p = conn.prepareStatement(query);
+	            p.setInt(1, newId);
+	            r = p.executeQuery();
+
+	            if (r.next()) {
+	                return new Customer(
+	                    r.getInt("customer_id"),
+	                    r.getString("email"),
+	                    r.getString("first_name"),
+	                    r.getString("last_name"),
+	                    r.getString("phone_number"),
+	                    r.getString("gender"),
+	                    r.getInt("age"),
+	                    r.getString("profession"),
+	                    r.getString("income_level"),
+	                    r.getString("city"),
+	                    r.getTimestamp("first_visit_date")
+	                );
+	            }
+	        }
+	    } else {
+	        JOptionPane.showMessageDialog(null, "3 karakterden kısa bir veri girilemez.");
+	    }
+
+	    return null;
+	}
+	
+	public boolean isEmailAlreadyRegistered(String email) throws SQLException {
+	    String query = "SELECT COUNT(*) FROM customer WHERE email = ?";
+	    try (PreparedStatement checkEmailStmt = conn.prepareStatement(query)) {
+	        checkEmailStmt.setString(1, email);
+	        try (ResultSet emailResult = checkEmailStmt.executeQuery()) {
+	            return emailResult.next() && emailResult.getInt(1) > 0;
+	        }
+	    }
+	}
+	
+	//test sınıfı için
+	public JTextField getNameField() {
+	    return nameField;
+	}
+	
+	public JTextField getSurnameField() {
+	    return surnameField;
+	}
+
+	public JTextField getEmailField() {
+	    return emailField;
+	}
+
+	public JTextField getPhoneField() {
+	    return phoneField;
+	}
+
+	public JTextField getCityField() {
+	    return cityField;
+	}
+
+	public JTextField getPasswordField() {
+	    return passwordField;
+	}
+	
+	public JTextField getProfessionField() {
+	    return professionField;
+	}
+
+	public JComboBox<String> getGenderComboBox() {
+	    return genderComboBox;
+	}
+
+	public JSpinner getAgeSpinner() {
+	    return ageSpinner;
+	}
+
+	public JComboBox<String> getIncomeLevelComboBox() {
+	    return incomeLevelComboBox;
+	}
+
 
 	public void showFrame() {
 		frame.setVisible(true);
