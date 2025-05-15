@@ -165,7 +165,7 @@ public class CustomerMainPage {
 		changePasswordButton.setFocusable(false);
 		changePasswordButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new CustomerChangePassword(conn, customer.getCustomerId());
+				new CustomerChangePassword(conn, customer);
 			}
 		});
 		changePasswordButton.setFont(new Font("Tahoma", Font.BOLD, 16));
