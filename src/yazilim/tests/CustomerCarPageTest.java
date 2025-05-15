@@ -85,12 +85,14 @@ public class CustomerCarPageTest {
         
         customerCarPage = new CustomerCarPage(customer, conn);
     }
-    //test verilerini silme
+    
+  //test verilerini silme
     @AfterEach
     void tearDown() throws SQLException {
         // stock tablosundan silme
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM stock WHERE vehicle_id = ?")) {
+        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM stock WHERE vehicle_id IN (?, ?)")) {
             stmt.setInt(1, 100);
+            stmt.setInt(2, 101);
             stmt.executeUpdate();
         }
 
@@ -101,8 +103,9 @@ public class CustomerCarPageTest {
         }
 
         // vehicle tablosundan silme
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM vehicle WHERE vehicle_id = ?")) {
+        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM vehicle WHERE vehicle_id IN (?, ?)")) {
             stmt.setInt(1, 100);
+            stmt.setInt(2, 101);
             stmt.executeUpdate();
         }
 
@@ -116,6 +119,7 @@ public class CustomerCarPageTest {
             conn.close();
         }
     }
+
 
     @Test
     void testLoadPurchasedCars() {
