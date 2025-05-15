@@ -123,6 +123,15 @@ public class DealerMainPage {
 	    frame.getContentPane().add(approveOrdersButton);
 
 	    y += 60;
+	    
+	    JButton reportButton = new JButton("Rapor Sayfası");
+	    reportButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
+	    reportButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+	    reportButton.setFocusable(false);
+	    reportButton.addActionListener(e -> new ReportPage(dealer, conn));
+	    frame.getContentPane().add(reportButton);
+
+	    y += 60;
 
 	    JButton returnButton = new JButton("Çıkış Yap");
 	    returnButton.setBounds(buttonX, y, buttonWidth, buttonHeight);

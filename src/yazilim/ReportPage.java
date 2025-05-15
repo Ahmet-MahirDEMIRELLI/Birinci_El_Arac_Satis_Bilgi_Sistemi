@@ -48,6 +48,7 @@ public class ReportPage {
     private ChartPanel priceChartPanel;
     private JScrollPane saleHistoryScrollPane;
     private JPanel forecastsPanel;
+    private JLabel totalLabel;
     private int reportAgainstOthersVehicleId = -1;
     private int saleHistoryVehicleId = -1;
     private int saleGuessVehicleId = -1;
@@ -76,12 +77,14 @@ public class ReportPage {
     }
 
     public ReportPage(WarehouseOrDealer dlr, Connection parent_conn) {
+    	System.out.println("1");
         dealer = dlr;
         conn = parent_conn;
         initialize();
     }
 
     private void initialize() {
+    	System.out.println("2");
         frame = new JFrame();
         frame.setTitle("Rapor Sayfası");
         frame.setBounds(100, 100, 1200, 600);
@@ -206,7 +209,7 @@ public class ReportPage {
 						try {
 							PreparedStatement stmt = conn.prepareStatement("SELECT user_id, vehicle_id, sale_date, sale_price FROM sales ORDER BY sale_date DESC;");
 							ResultSet rs = stmt.executeQuery();
-	                	    populateSaleHistoryTable(rs);
+							showSaleHistoryData(rs);
 						} catch (SQLException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
@@ -220,7 +223,7 @@ public class ReportPage {
                     		PreparedStatement stmt = conn.prepareStatement("SELECT user_id, vehicle_id, sale_date, sale_price FROM sales WHERE vehicle_id = ? ORDER BY sale_date DESC;");
                     	    stmt.setInt(1, vehicleId);
                     	    ResultSet rs = stmt.executeQuery();
-                    	    populateSaleHistoryTable(rs);
+                    	    showSaleHistoryData(rs);
                     	} catch (SQLException ex) {
                     	    ex.printStackTrace();
                     	}
@@ -300,10 +303,12 @@ public class ReportPage {
                 }
             }
         });
+        
+        frame.setVisible(true);
     }
     
     private int getSaleCountForecast(ArrayList<SaleRecord> saleRecords) {
-    	if(saleRecords.size() % 4 >= 3) {
+    	if(saleRecords.size() % 5 >= 3) {
     		return saleRecords.size() / 5 + 1;
     	}
     	
@@ -360,6 +365,10 @@ public class ReportPage {
             frame.getContentPane().remove(saleHistoryScrollPane);
             saleHistoryScrollPane = null;
         }
+    	if (totalLabel != null) {
+            frame.getContentPane().remove(totalLabel);
+            totalLabel = null;
+        }
     }
     
     private void clearSaleGuess() {
@@ -390,16 +399,18 @@ public class ReportPage {
         return vehicleList;
     }
     
-    private void populateSaleHistoryTable(ResultSet rs) {
+    private void showSaleHistoryData(ResultSet rs) {
     	String[] columnNames = {"#", "Müşteri", "Araç", "Satış Tarihi", "Satış Fiyatı", "Dönem"};
 	    ArrayList<Object[]> rowData = new ArrayList<>();
 	    int counter = 1;
+	    double totalSalePrice = 0.00;
 	    try {
 			while (rs.next()) {
 			    int userId = rs.getInt("user_id");
 			    int vehicleId = rs.getInt("vehicle_id");
 			    Date saleDate = rs.getDate("sale_date");
 			    double salePrice = rs.getDouble("sale_price");
+			    totalSalePrice += salePrice;
 
 			    Calendar cal = Calendar.getInstance();
 			    cal.setTime(saleDate);
@@ -422,12 +433,18 @@ public class ReportPage {
 
 	    JTable table = new JTable(data, columnNames);
 	    TableColumn countColumn = table.getColumnModel().getColumn(0);
-	    countColumn.setMinWidth(15);
-	    countColumn.setMaxWidth(15);
-	    countColumn.setPreferredWidth(15);
+	    countColumn.setMinWidth(20);
+	    countColumn.setMaxWidth(20);
+	    countColumn.setPreferredWidth(20);
+	    
+	    totalLabel = new JLabel(String.format("Toplam Satış: %.2f₺", totalSalePrice));
+	    totalLabel.setFont(new Font("Arial", Font.BOLD, 14));
+	    totalLabel.setBounds(500, 120, 300, 25);
+	    
 	    saleHistoryScrollPane = new JScrollPane(table);
 	    saleHistoryScrollPane.setBounds(150, 150, 900, 300);
 
+	    frame.getContentPane().add(totalLabel);
 	    frame.getContentPane().add(saleHistoryScrollPane);
     }
     
