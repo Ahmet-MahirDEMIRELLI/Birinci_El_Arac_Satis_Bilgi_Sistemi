@@ -225,7 +225,8 @@ public class CustomerRegisterPage {
 
 	    if (nameField.getText().length() >= 3 && surnameField.getText().length() >= 3 &&
 	        cityField.getText().length() >= 3 && phoneField.getText().length() >= 3 &&
-	        passwordField.getText().length() >= 3) {
+	        passwordField.getText().length() >= 3 && emailField.getText().length() >= 3 && 
+	        professionField.getText().length() >= 3) {
 
 	        if (phoneField.getText().length() != 10) {
 	            JOptionPane.showMessageDialog(null, "Telefon numarası uzunluğu 10 olmalı.");
