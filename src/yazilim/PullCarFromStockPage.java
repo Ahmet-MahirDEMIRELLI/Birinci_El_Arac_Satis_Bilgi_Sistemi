@@ -8,7 +8,9 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 import yazilim.classes.Vehicle;
 import yazilim.classes.VehicleStock;
@@ -100,6 +102,16 @@ public class PullCarFromStockPage {
 	            }
 	        }
 	    }
+	    
+	    JLabel quantityLabel = new JLabel("Adet:");
+	    quantityLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
+	    quantityLabel.setBounds(30, 80, 50, 30);
+	    frame.getContentPane().add(quantityLabel);
+
+	    JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
+	    quantitySpinner.setBounds(80, 80, 60, 30);
+	    frame.getContentPane().add(quantitySpinner);
+
 
 	    JButton pullButton = new JButton("Araç Çek");
 	    pullButton.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -111,12 +123,17 @@ public class PullCarFromStockPage {
 	        public void actionPerformed(ActionEvent e) {
 	            int selectedIndex = vehicleSelector.getSelectedIndex();
 	            if (selectedIndex != -1) {
+	            	int quantity = (int) quantitySpinner.getValue();
 	                int vehicleId = vehicleIdMap.get(selectedIndex);
-	                boolean success = pullVehicleToDealerFromWarehouse(vehicleId);
-	                if (success) {
+	                int result = pullVehicleToDealerFromWarehouse(vehicleId, quantity);
+	                if (result == 1) {
 	                    JOptionPane.showMessageDialog(null, "Araç çekme başarılı.");
 	                    reloadVehicleData();
-	                } else {
+	                } 
+	                else if(result == -1){
+	                    JOptionPane.showMessageDialog(null, "Stok yetersiz.");
+	                }
+	                else{
 	                    JOptionPane.showMessageDialog(null, "Araç çekme başarısız.");
 	                }
 	            }
@@ -137,12 +154,26 @@ public class PullCarFromStockPage {
 	    returnButton.setFocusable(false);
 	}
 	
-	public boolean pullVehicleToDealerFromWarehouse(int vehicleId) {
+	public int pullVehicleToDealerFromWarehouse(int vehicleId, int quantity) {
+		 int availableStock = 0;
+         for (VehicleStock vs : vehicleStockList) {
+             if (vs.getVehicleId() == vehicleId) {
+                 availableStock = vs.getStock();
+                 break;
+             }
+         }
+
+         if (quantity > availableStock) {
+             return -1;
+         }
+		
+		
         try {
             PreparedStatement updateWarehouseStmt = conn.prepareStatement(
-                "UPDATE stock SET quantity = quantity - 1 WHERE vehicle_id = ? AND location_type = 'warehouse'"
+                "UPDATE stock SET quantity = quantity - ? WHERE vehicle_id = ? AND location_type = 'warehouse'"
             );
-            updateWarehouseStmt.setInt(1, vehicleId);
+            updateWarehouseStmt.setInt(1, quantity);
+            updateWarehouseStmt.setInt(2, vehicleId);
             int rowsAffected = updateWarehouseStmt.executeUpdate();
 
             if (rowsAffected > 0) {
@@ -171,25 +202,27 @@ public class PullCarFromStockPage {
 
                 if (rs.next()) {
                     PreparedStatement updateDealerStmt = conn.prepareStatement(
-                        "UPDATE stock SET quantity = quantity + 1 WHERE vehicle_id = ? AND location_type = 'dealer'"
+                        "UPDATE stock SET quantity = quantity + ? WHERE vehicle_id = ? AND location_type = 'dealer'"
                     );
-                    updateDealerStmt.setInt(1, vehicleId);
+                    updateDealerStmt.setInt(1, quantity);
+                    updateDealerStmt.setInt(2, vehicleId);
                     updateDealerStmt.executeUpdate();
-                    return true;
+                    return 1;
                 } 
                 else {
                     PreparedStatement insertDealerStmt = conn.prepareStatement(
-                        "INSERT INTO stock (vehicle_id, location_type, quantity) VALUES (?, 'dealer', 1)"
+                        "INSERT INTO stock (vehicle_id, location_type, quantity) VALUES (?, 'dealer', ?)"
                     );
                     insertDealerStmt.setInt(1, vehicleId);
+                    insertDealerStmt.setInt(2, quantity);
                     insertDealerStmt.executeUpdate();
-                    return true;
+                    return 1;
                 }
             } else {
-            	return false;
+            	return 0;
             }
         } catch (SQLException ex) {
-        	return false;
+        	return 0;
         }
 	}
 

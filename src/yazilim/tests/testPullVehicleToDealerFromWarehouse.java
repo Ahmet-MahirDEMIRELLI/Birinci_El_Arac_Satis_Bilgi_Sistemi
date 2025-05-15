@@ -54,7 +54,7 @@ public class testPullVehicleToDealerFromWarehouse {
             stmt.setInt(1, stockId);
             stmt.setInt(2, vehicle_1.getVehicleId());
             stmt.setString(3, "warehouse");
-            stmt.setInt(4, 2);
+            stmt.setInt(4, 5);
             stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
             stmt.executeUpdate();
         }
@@ -92,30 +92,39 @@ public class testPullVehicleToDealerFromWarehouse {
     @Test
     public void testPullVehicle_1() {
     	System.out.println("\n=== testPullVehicle_1 Started ===");
-        boolean result = page.pullVehicleToDealerFromWarehouse(vehicle_1.getVehicleId());
-        assertTrue(result, "Araç çekme işlemi başarılı olmalı. (AraÇ ID: " + vehicle_1.getVehicleId() + ")");
+        int result = page.pullVehicleToDealerFromWarehouse(vehicle_1.getVehicleId(), 2);
+        assertTrue(result == 1, "Araç çekme işlemi başarılı olmalı. (AraÇ ID: " + vehicle_1.getVehicleId() + ")");
         System.out.println(vehicle_1.getVehicleId() + " Id'li aracı bayiye çekme işlemi beklendiği gibi başarılı oldu.");
-        int expectedStock = 1;
+        int expectedStock = 3;
         int actualStock = getWarehouseStockForVehicle(vehicle_1.getVehicleId());
-        assertEquals(expectedStock, actualStock, "Depodaki stok 1 olmalı.");
-        System.out.println(vehicle_1.getVehicleId() + " Id'li araç için stock=1 kaldığı doğrulandı.");
+        assertEquals(expectedStock, actualStock, "Depodaki stok 3 olmalı.");
+        System.out.println(vehicle_1.getVehicleId() + " Id'li araç için stock=3 kaldığı doğrulandı.");
     }
     
     // Zaten bayide olan aracı çekmeye çalışıyor
     @Test
     public void testPullVehicle_2() {
     	System.out.println("\n=== testPullVehicle_2 Started ===");
-        boolean result = page.pullVehicleToDealerFromWarehouse(vehicle_2.getVehicleId());
-        assertFalse(result, "Araç çekme işlemi başarısız olmalı. (AraÇ ID: "+ vehicle_2.getVehicleId() + ")");
+        int result = page.pullVehicleToDealerFromWarehouse(vehicle_2.getVehicleId(), 1);
+        assertFalse(result == 0, "Araç çekme işlemi başarısız olmalı. (AraÇ ID: "+ vehicle_2.getVehicleId() + ")");
         System.out.println(vehicle_1.getVehicleId() + " Id'li araç zaten bayide olduğu için çekme işlemi beklendiği gibi başarısız oldu.");
     }
     
-    // Depoda 1 adet kalan aracı çekiyor
+    // Stoktan daha fazla talep ediyor
     @Test
     public void testPullVehicle_3() {
     	System.out.println("\n=== testPullVehicle_3 Started ===");
-        boolean result = page.pullVehicleToDealerFromWarehouse(vehicle_1.getVehicleId());
-        assertTrue(result, "Araç çekme işlemi başarılı olmalı (AraÇ ID: " + vehicle_1.getVehicleId() + ")");
+        int result = page.pullVehicleToDealerFromWarehouse(vehicle_1.getVehicleId(), 5);
+        assertTrue(result == -1, "Araç çekme işlemi stok yetersizliği sebebi ile beklendiği gibi başarısız oldu.");
+        System.out.println(vehicle_1.getVehicleId() + " Id'li aracı bayiye çekme işlemi stok yetersizliği sebebi ile beklendiği gibi başarısız oldu.");
+    }
+    
+    // Depoda araç kalmayacak şekilde çekiyor
+    @Test
+    public void testPullVehicle_4() {
+    	System.out.println("\n=== testPullVehicle_4 Started ===");
+        int result = page.pullVehicleToDealerFromWarehouse(vehicle_1.getVehicleId(), 3);
+        assertTrue(result == 1, "Araç çekme işlemi başarılı olmalı (AraÇ ID: " + vehicle_1.getVehicleId() + ")");
         System.out.println(vehicle_1.getVehicleId() + " Id'li aracı bayiye çekme işlemi beklendiği gibi başarılı oldu.");
         int remainingRows = getWarehouseStockRowCount(vehicle_1.getVehicleId());
         assertEquals(0, remainingRows, "Depoda bu araçtan kayıt kalmamalı (Araç ID: " + vehicle_1.getVehicleId() + ")");
