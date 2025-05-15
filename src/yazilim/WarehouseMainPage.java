@@ -82,6 +82,20 @@ public class WarehouseMainPage {
 	        }
 	    });
 	    frame.getContentPane().add(newCarButton);
+	    
+	    y += 60;
+	    
+	    JButton updateStockButton = new JButton("Stokları Güncelle");
+	    updateStockButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+	    updateStockButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
+        frame.getContentPane().add(updateStockButton);
+        updateStockButton.setFocusable(false);
+
+        updateStockButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new UpdateStockPage(warehouse, conn);
+            }
+        });
 
 	    y += 60;
 	    
