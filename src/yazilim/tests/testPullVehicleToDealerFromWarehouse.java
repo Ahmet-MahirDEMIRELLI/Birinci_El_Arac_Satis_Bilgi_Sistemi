@@ -107,7 +107,7 @@ public class testPullVehicleToDealerFromWarehouse {
     	System.out.println("\n=== testPullVehicle_2 Started ===");
         int result = page.pullVehicleToDealerFromWarehouse(vehicle_2.getVehicleId(), 1);
         assertFalse(result == 0, "Araç çekme işlemi başarısız olmalı. (AraÇ ID: "+ vehicle_2.getVehicleId() + ")");
-        System.out.println(vehicle_1.getVehicleId() + " Id'li araç zaten bayide olduğu için çekme işlemi beklendiği gibi başarısız oldu.");
+        System.out.println(vehicle_2.getVehicleId() + " Id'li araç zaten bayide olduğu için çekme işlemi beklendiği gibi başarısız oldu.");
     }
     
     // Stoktan daha fazla talep ediyor
