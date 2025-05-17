@@ -57,14 +57,7 @@ public class DealerOrderApprovalPage {
                 try {
                     int requestId = orderRequestIds.get(index);
 
-                    // 1. Update request status
-                    PreparedStatement ps = conn.prepareStatement(
-                        "UPDATE requests SET status = 'accepted' WHERE request_id = ?"
-                    );
-                    ps.setInt(1, requestId);
-                    ps.executeUpdate();
-
-                    // 2. Get user_id and vehicle_id from requests
+                    // Get user_id and vehicle_id from requests
                     PreparedStatement selectStmt = conn.prepareStatement(
                         "SELECT user_id, vehicle_id FROM requests WHERE request_id = ?"
                     );
@@ -75,7 +68,7 @@ public class DealerOrderApprovalPage {
                         int userId = rs.getInt("user_id");
                         int vehicleId = rs.getInt("vehicle_id");
 
-                        // 3. Get price from price_offers
+                        // Get price from price_offers
                         PreparedStatement priceStmt = conn.prepareStatement(
                             "SELECT offered_price FROM price_offers WHERE user_id = ? AND vehicle_id = ?"
                         );
@@ -88,7 +81,27 @@ public class DealerOrderApprovalPage {
                             price = priceRs.getDouble("offered_price");
                         }
 
-                        // 4. Insert into sales
+                        // First, reduce stock
+                        PreparedStatement updateStockStmt = conn.prepareStatement(
+                            "UPDATE stock SET quantity = quantity - 1, updated_at = CURRENT_TIMESTAMP " +
+                            "WHERE vehicle_id = ? AND location_type = 'dealer' AND quantity > 0"
+                        );
+                        updateStockStmt.setInt(1, vehicleId);
+                        int updatedRows = updateStockStmt.executeUpdate();
+
+                        if (updatedRows == 0) {
+                            JOptionPane.showMessageDialog(frame, "Stokta yeterli araç bulunamadı!", "Stok Hatası", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        // Update request status to accepted
+                        PreparedStatement ps = conn.prepareStatement(
+                            "UPDATE requests SET status = 'accepted' WHERE request_id = ?"
+                        );
+                        ps.setInt(1, requestId);
+                        ps.executeUpdate();
+
+                        // Insert into sales
                         PreparedStatement insertStmt = conn.prepareStatement(
                             "INSERT INTO sales (user_id, vehicle_id, sale_date, sale_price) VALUES (?, ?, CURRENT_DATE, ?)"
                         );
@@ -97,7 +110,7 @@ public class DealerOrderApprovalPage {
                         insertStmt.setDouble(3, price);
                         insertStmt.executeUpdate();
 
-                        // 5. Delete from price_offers
+                        // Delete from price_offers
                         PreparedStatement deletePrice = conn.prepareStatement(
                             "DELETE FROM price_offers WHERE user_id = ? AND vehicle_id = ?"
                         );
