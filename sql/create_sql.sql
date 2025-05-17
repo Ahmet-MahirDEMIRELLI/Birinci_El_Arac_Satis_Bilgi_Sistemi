@@ -19,17 +19,6 @@ CREATE TABLE customer (
     first_visit_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-/*
-CREATE TABLE admin (
-    admin_id SERIAL PRIMARY KEY,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password_admin TEXT NOT NULL,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL
-    
-);
-*/
-
 CREATE TABLE warehouse_or_dealer (
     id SERIAL PRIMARY KEY,
     email VARCHAR(100) UNIQUE NOT NULL,

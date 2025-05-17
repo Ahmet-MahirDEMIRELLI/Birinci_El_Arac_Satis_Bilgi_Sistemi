@@ -6,25 +6,10 @@ VALUES
 ('ahmet@example.com', 'hashed_pass4', 'Ahmet', 'Çetin', '05443334455', 'male', 35, 'Avukat', 'medium', 'Bursa'),
 ('elif@example.com', 'hashed_pass5', 'Elif', 'Koç', '05441112233', 'female', 28, 'Grafiker', 'medium', 'Antalya');
 
-/*
-INSERT INTO admin (email, password_admin, first_name, last_name)
-VALUES 
-('admin1@example.com', 'hashed_admin1', 'Zeynep', 'Yılmaz'),
-('admin2@example.com', 'hashed_admin2', 'Ali', 'Toprak'),
-('admin3@example.com', 'hashed_admin3', 'Selin', 'Acar'),
-('admin4@example.com', 'hashed_admin4', 'Murat', 'Demir'),
-('admin5@example.com', 'hashed_admin5', 'Esra', 'Yıldız');
-*/
-
 INSERT INTO warehouse_or_dealer (email, password, type)
 VALUES 
 ('dealer@example.com', 'hashed_dealer', 'DEALER'),
 ('warehouse@example.com', 'hashed_warehouse', 'WAREHOUSE');
-
-/* Birden fazla bayi veya depo olucaksa stock tablosunda location_type değil warehouse_or_dealer'I işararet eden location_id foreignkey i tutulmalı
-('dealer2@example.com', 'hashed_dealer2', 'DEALER'),
-('warehouse2@example.com', 'hashed_warehouse2', 'WAREHOUSE');
-*/
 
 INSERT INTO vehicle (brand, model, year, package, price)
 VALUES 
@@ -46,12 +31,10 @@ INSERT INTO sales (vehicle_id, user_id, sale_date, sale_price)
 VALUES 
 -- 2025 2. dönem (Nis-May-Haz)
 (1, 1, '2025-04-10', 460000.00),
-(2, 2, '2025-05-05', 625000.00),
 (3, 3, '2025-05-15', 530000.00),
 -- 2025 1. dönem (Oca-Şub-Mar)
 (4, 4, '2025-01-20', 780000.00),
 (5, 5, '2025-02-14', 495000.00),
-(1, 3, '2025-03-22', 455000.00),
 -- 2024 4. dönem (Eki-Kas-Ara)
 (2, 1, '2024-10-30', 610000.00),
 (3, 5, '2024-11-11', 520000.00),
@@ -72,32 +55,86 @@ VALUES
 
 INSERT INTO requests (user_id, request_type, vehicle_id, request_date, status)
 VALUES 
-(1, 'test_drive', 1, '2025-04-10', 'accepted'),
-(2, 'price_offer', 2, '2025-04-11', 'pending'),
-(3, 'test_drive', 3, '2025-04-12', 'rejected'),
-(4, 'price_offer', 4, '2025-04-13', 'accepted'),
-(5, 'test_drive', 5, '2025-04-14', 'pending');
+-- 2025 2. dönem
+(1, 'price_offer', 1, '2025-04-05', 'accepted'),   -- request_id = 1
+(2, 'price_offer', 2, '2025-04-28', 'pending'),    -- request_id = 2
+(3, 'price_offer', 3, '2025-05-10', 'accepted'),   -- request_id = 3
 
-INSERT INTO requests (user_id, request_type, vehicle_id, request_date, status)
-VALUES 
-(2, 'price_offer', 2, '2025-05-20', 'accepted'),
-(1, 'price_offer', 1, '2025-04-05', 'accepted'),
-(4, 'price_offer', 4, '2025-03-15', 'accepted'),
-(3, 'price_offer', 3, '2025-04-20', 'accepted'),
-(5, 'price_offer', 5, '2025-04-28', 'accepted'),
-(2, 'order', 2, '2025-05-01', 'accepted'),
-(1, 'order', 1, '2025-04-12', 'accepted'),
-(4, 'order', 4, '2025-04-17', 'accepted'),
-(3, 'order', 3, '2025-04-22', 'accepted'),
-(5, 'order', 5, '2025-05-03', 'accepted');
+-- 2025 1. dönem
+(4, 'price_offer', 4, '2025-01-15', 'accepted'),   -- request_id = 4
+(5, 'price_offer', 5, '2025-02-10', 'accepted'),   -- request_id = 5
+(3, 'price_offer', 1, '2025-03-18', 'pending'),    -- request_id = 6
+
+-- 2024 4. dönem
+(1, 'price_offer', 2, '2024-10-25', 'accepted'),   -- request_id = 7
+(5, 'price_offer', 3, '2024-11-07', 'accepted'),   -- request_id = 8
+(4, 'price_offer', 4, '2024-11-30', 'accepted'),   -- request_id = 9
+
+-- 2024 3. dönem
+(2, 'price_offer', 5, '2024-07-18', 'accepted'),   -- request_id = 10
+(1, 'price_offer', 1, '2024-08-10', 'accepted'),   -- request_id = 11
+(3, 'price_offer', 2, '2024-09-01', 'pending'),    -- request_id = 12
+
+-- 2024 2. dönem
+(4, 'price_offer', 3, '2024-05-01', 'accepted'),   -- request_id = 13
+(5, 'price_offer', 4, '2024-06-05', 'accepted'),   -- request_id = 14
+(2, 'price_offer', 5, '2024-06-20', 'pending'),    -- request_id = 15
+
+-- 2024 1. dönem
+(4, 'price_offer', 4, '2024-01-15', 'accepted'),   -- request_id = 16
+(5, 'price_offer', 5, '2024-02-10', 'pending'),    -- request_id = 17
+(3, 'price_offer', 1, '2024-03-15', 'accepted'),   -- request_id = 18
+
+-- 2025 2. dönem
+(1, 'order', 1, '2025-04-10', 'accepted'),   -- request_id = 19
+(3, 'order', 3, '2025-05-15', 'accepted'),   -- request_id = 21
+
+-- 2025 1. dönem
+(4, 'order', 4, '2025-01-20', 'accepted'),   -- request_id = 22
+(5, 'order', 5, '2025-02-14', 'accepted'),   -- request_id = 23
+
+-- 2024 4. dönem (Eki-Kas-Ara)
+(1, 'order', 2, '2024-10-30', 'accepted'),   -- request_id = 24
+(5, 'order', 3, '2024-11-11', 'accepted'),   -- request_id = 25
+(4, 'order', 4, '2024-12-05', 'accepted'),   -- request_id = 26
+
+-- 2024 3. dönem (Tem-Ağu-Eyl)
+(2, 'order', 5, '2024-07-22', 'accepted'),   -- request_id = 27
+(1, 'order', 1, '2024-08-18', 'accepted'),   -- request_id = 28
+
+-- 2024 2. dönem
+(4, 'price_offer', 3, '2024-05-05', 'accepted'),   -- request_id = 29
+(5, 'price_offer', 4, '2024-06-10', 'accepted'),   -- request_id = 30
+
+-- 2024 1. dönem
+(4, 'price_offer', 4, '2024-01-20', 'accepted'),   -- request_id = 31
+(3, 'price_offer', 1, '2024-03-22', 'accepted');   -- request_id = 32
+
 
 INSERT INTO price_offers (request_id, user_id, vehicle_id, offer_date, offered_price)
 VALUES 
-(4, 4, 4, '2025-04-25', 800000.00),
-(6, 2, 2, '2025-04-26', 640000.00),
-(7, 1, 1, '2025-04-08', 445000.00),
-(8, 4, 4, '2025-03-20', 770000.00),
-(9, 3, 3, '2025-04-21', 510000.00),
-(10, 5, 5, '2025-05-04', 485000.00);
+-- 2025 2. dönem
+(1, 1, 1, '2025-04-28', 460000.00),
+(2, 2, 2, '2025-04-05', 450000.00),
+(3, 3, 3, '2025-05-10', 530000.00),
 
+-- 2025 1. dönem
+(4, 4, 4, '2025-01-15', 780000.00),
+(5, 5, 5, '2025-02-10', 495000.00),
 
+-- 2024 4. dönem
+(7, 1, 2, '2024-10-25', 610000.00),
+(8, 5, 3, '2024-11-07', 520000.00),
+(9, 4, 4, '2024-11-30', 790000.00),
+
+-- 2024 3. dönem
+(10, 2, 5, '2024-07-18', 490000.00),
+(11, 1, 1, '2024-08-10', 460000.00),
+
+-- 2024 2. dönem
+(13, 4, 3, '2024-05-01', 525000.00),
+(14, 5, 4, '2024-06-05', 785000.00),
+
+-- 2024 1. dönem
+(16, 4, 4, '2024-01-15', 780000.00),
+(18, 3, 1, '2024-03-15', 455000.00);

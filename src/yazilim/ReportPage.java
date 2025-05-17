@@ -77,14 +77,12 @@ public class ReportPage {
     }
 
     public ReportPage(WarehouseOrDealer dlr, Connection parent_conn) {
-    	System.out.println("1");
         dealer = dlr;
         conn = parent_conn;
         initialize();
     }
 
     private void initialize() {
-    	System.out.println("2");
         frame = new JFrame();
         frame.setTitle("Rapor Sayfası");
         frame.setBounds(100, 100, 1200, 600);
