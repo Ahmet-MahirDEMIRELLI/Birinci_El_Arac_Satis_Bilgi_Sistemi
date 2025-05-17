@@ -116,8 +116,6 @@ public class TestDriveRequestPage {
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); 
-                CustomerMainPage mainPage = new CustomerMainPage(customer, conn);
-                mainPage.showFrame();
             }
         });
 
