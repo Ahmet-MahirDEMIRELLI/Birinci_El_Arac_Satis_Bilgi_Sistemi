@@ -22,10 +22,13 @@ VALUES
 INSERT INTO stock (vehicle_id, location_type, quantity)
 VALUES 
 (1, 'warehouse', 10),
-(2, 'dealer', 5),
 (3, 'warehouse', 8),
-(4, 'dealer', 4),
-(5, 'warehouse', 1);
+(5, 'warehouse', 1),
+(1, 'dealer', 2),
+(2, 'dealer', 3),
+(3, 'dealer', 4),
+(4, 'dealer', 5),
+(5, 'dealer', 6);
 
 INSERT INTO sales (vehicle_id, user_id, sale_date, sale_price)
 VALUES 
