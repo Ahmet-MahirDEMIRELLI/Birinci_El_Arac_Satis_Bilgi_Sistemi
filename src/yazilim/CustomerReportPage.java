@@ -391,7 +391,7 @@ public class CustomerReportPage {
 		    countPlot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0}: {1} kişi ({2})", new DecimalFormat("0"), new DecimalFormat("0.0%")));
 
 		    incomeChartPanel = new ChartPanel(incomeChart);
-		    incomeChartPanel.setBounds(450, 150, 400, 300);
+		    incomeChartPanel.setBounds(885, 150, 400, 300);
 		    frame.getContentPane().add(incomeChartPanel);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -410,7 +410,7 @@ public class CustomerReportPage {
 	    countPlot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0}: {1} adet ({2})", new DecimalFormat("0"), new DecimalFormat("0.0%")));
 
 	    saleStatisticsChartPanel = new ChartPanel(saleStatisticsChart);
-	    saleStatisticsChartPanel.setBounds(900, 150, 400, 300);
+	    saleStatisticsChartPanel.setBounds(465, 150, 400, 300);
 	    frame.getContentPane().add(saleStatisticsChartPanel);
     }
     

@@ -42,14 +42,11 @@ VALUES
 -- 2024 3. dönem (Tem-Ağu-Eyl)
 (5, 2, '2024-07-22', 490000.00),
 (1, 1, '2024-08-18', 460000.00),
-(2, 3, '2024-09-09', 630000.00),
 -- 2024 2. dönem (Nis-May-Haz)
 (3, 4, '2024-05-05', 525000.00),
 (4, 5, '2024-06-10', 785000.00),
-(5, 2, '2024-06-25', 495000.00),
 -- 2024 1. dönem (Oca-Şub-Mar)
 (4, 4, '2024-01-20', 780000.00),
-(5, 5, '2024-02-14', 495000.00),
 (1, 3, '2024-03-22', 455000.00);
 
 
@@ -57,7 +54,7 @@ INSERT INTO requests (user_id, request_type, vehicle_id, request_date, status)
 VALUES 
 -- 2025 2. dönem
 (1, 'price_offer', 1, '2025-04-05', 'accepted'),   -- request_id = 1
-(2, 'price_offer', 2, '2025-04-28', 'pending'),    -- request_id = 2
+(2, 'price_offer', 2, '2025-04-28', 'accepted'),   -- request_id = 2
 (3, 'price_offer', 3, '2025-05-10', 'accepted'),   -- request_id = 3
 
 -- 2025 1. dönem
@@ -115,7 +112,7 @@ INSERT INTO price_offers (request_id, user_id, vehicle_id, offer_date, offered_p
 VALUES 
 -- 2025 2. dönem
 (1, 1, 1, '2025-04-28', 460000.00),
-(2, 2, 2, '2025-04-05', 450000.00),
+(2, 2, 2, '2025-04-28', 480000.00),
 (3, 3, 3, '2025-05-10', 530000.00),
 
 -- 2025 1. dönem
