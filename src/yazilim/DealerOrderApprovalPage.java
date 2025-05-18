@@ -6,6 +6,7 @@ import yazilim.classes.WarehouseOrDealer;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -161,29 +162,58 @@ public class DealerOrderApprovalPage {
         orderRequestIds.clear();
         try {
             String query = """
-                SELECT r.request_id, r.user_id, r.vehicle_id, r.request_date,
-                       v.brand, v.model, v.year, p.offered_price
+                SELECT request_id, user_id, vehicle_id, request_date
                 FROM requests r
-                JOIN vehicle v ON r.vehicle_id = v.vehicle_id
-                JOIN price_offers p ON r.vehicle_id = p.vehicle_id AND r.user_id = p.user_id
-                WHERE r.request_type = 'order' AND r.status = 'pending'
+                WHERE request_type = 'order' AND status = 'pending'
             """;
 
             PreparedStatement ps = conn.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("request_id");
+                int orderRequestId = rs.getInt("request_id");
                 int userId = rs.getInt("user_id");
-                String brand = rs.getString("brand");
-                String model = rs.getString("model");
-                int year = rs.getInt("year");
-                double price = rs.getDouble("offered_price");
+                int vehicleId = rs.getInt("vehicle_id");
                 Date date = rs.getDate("request_date");
-
-                String line = "Kullanıcı: " + userId + ", Araç: " + brand + " " + model + " (" + year + "), Fiyat: " + String.format("%.2f TL", price) + ", Tarih: " + date;
+                
+                query = "SELECT brand, model, year, package FROM vehicle WHERE vehicle_id = ?;";
+                PreparedStatement ps1 = conn.prepareStatement(query);
+                ps1.setInt(1, vehicleId);
+                ResultSet rs1 = ps1.executeQuery();
+                String brand = "";
+                String model = "";
+                int year = 0;
+                String pckg = "";
+                while(rs1.next()) {
+                	brand = rs1.getString("brand");
+                	model = rs1.getString("model");
+                	year = rs1.getInt("year");
+                	pckg = rs1.getString("package");
+                }
+                
+                query = "SELECT request_id FROM requests WHERE request_id < ? AND user_id = ? AND vehicle_id = ? AND request_type = 'price_offer' AND status = 'accepted' ORDER BY request_id DESC LIMIT 1;";
+                PreparedStatement ps2 = conn.prepareStatement(query);
+                ps2.setInt(1, orderRequestId);
+                ps2.setInt(2, userId);
+                ps2.setInt(3, vehicleId);
+                ResultSet rs2 = ps2.executeQuery();
+                int priceOfferRequestId = 0;
+                while(rs2.next()) {
+                	priceOfferRequestId = rs2.getInt("request_id");
+                }
+                
+                query = "SELECT offered_price FROM price_offers WHERE request_id = ?;";
+                PreparedStatement ps3 = conn.prepareStatement(query);
+                ps3.setInt(1, priceOfferRequestId);
+                ResultSet rs3 = ps3.executeQuery();
+                BigDecimal price = new BigDecimal(0.00);
+                while(rs3.next()) {
+                	price = rs3.getBigDecimal("offered_price");
+                }
+                
+                String line = "Kullanıcı: " + userId + ", Araç: " + brand + " " + model + " (" + year + ") " + pckg + ", Fiyat: " + String.format("%.2f TL", price) + ", Tarih: " + date;
                 orderModel.addElement(line);
-                orderRequestIds.add(id);
+                orderRequestIds.add(orderRequestId);
             }
         } catch (SQLException e) {
             e.printStackTrace();
