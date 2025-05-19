@@ -1,11 +1,8 @@
 package yazilim;
 
 import javax.swing.*;
-
-import yazilim.classes.WarehouseOrDealer;
-
+import yazilim.classes.Dealer;
 import java.awt.*;
-import java.awt.event.*;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,9 +13,9 @@ public class DealerOrderApprovalPage {
     private DefaultListModel<String> orderModel = new DefaultListModel<>();
     private JList<String> orderList;
     private ArrayList<Integer> orderRequestIds = new ArrayList<>();
-    private WarehouseOrDealer dealer;
+    private Dealer dealer;
 
-    public DealerOrderApprovalPage(Connection conn, WarehouseOrDealer dealer) {
+    public DealerOrderApprovalPage(Connection conn, Dealer dealer) {
         this.conn = conn;
         this.dealer = dealer;
         initialize();

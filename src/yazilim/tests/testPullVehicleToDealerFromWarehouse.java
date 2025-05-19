@@ -3,7 +3,7 @@ package yazilim.tests;
 import org.junit.jupiter.api.*;
 import yazilim.PullCarFromStockPage;
 import yazilim.classes.Vehicle;
-import yazilim.classes.WarehouseOrDealer;
+import yazilim.classes.Dealer;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class testPullVehicleToDealerFromWarehouse {
     private static Connection conn;
     private PullCarFromStockPage page;
-    private final static WarehouseOrDealer dealer = new WarehouseOrDealer(340, "dealer@example.com", "DEALER");
+    private final static Dealer dealer = new Dealer(340, "dealer@example.com");
     private final static Vehicle vehicle_1 = new Vehicle(124, "Volkswagen", "Tiguan", 2021, "Full", BigDecimal.valueOf(1500000.00));
     private final static Vehicle vehicle_2 = new Vehicle(125, "Ford", "Focus", 2021, "Full", BigDecimal.valueOf(1500000.00));
     private static int stockId = 100;
@@ -28,11 +28,10 @@ public class testPullVehicleToDealerFromWarehouse {
         conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
 
         try (PreparedStatement stmt = conn.prepareStatement(
-         "INSERT INTO warehouse_or_dealer (id, email, password, type) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING")) {
+         "INSERT INTO dealer (id, email, password) VALUES (?, ?, ?) ON CONFLICT DO NOTHING")) {
             stmt.setInt(1, dealer.getId());
             stmt.setString(2, dealer.getEmail());
             stmt.setString(3, "testpassword");
-            stmt.setString(4, dealer.getType());
             stmt.executeUpdate();
         }
 
@@ -154,7 +153,7 @@ public class testPullVehicleToDealerFromWarehouse {
             stmt.executeUpdate();
         }
 
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM warehouse_or_dealer WHERE id = ?")) {
+        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM warehouse WHERE id = ?")) {
             stmt.setInt(1, dealer.getId());
             stmt.executeUpdate();
         }

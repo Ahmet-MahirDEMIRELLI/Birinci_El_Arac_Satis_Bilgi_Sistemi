@@ -3,7 +3,7 @@ package yazilim.tests;
 import org.junit.jupiter.api.*;
 import yazilim.AddCarToStockPage;
 import yazilim.classes.Vehicle;
-import yazilim.classes.WarehouseOrDealer;
+import yazilim.classes.Warehouse;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class testAddCarToStock {
     private static Connection conn;
     private AddCarToStockPage page;
-    private static WarehouseOrDealer warehouse = new WarehouseOrDealer(2, "warehouse@example.com", "WAREHOUSE");
+    private static Warehouse warehouse = new Warehouse(2, "warehouse@example.com");
     private final static Vehicle vehicle = new Vehicle(126, "Lamborghini", "Huracan", 2021, "Full", BigDecimal.valueOf(15000000.00));
 
     @BeforeAll
@@ -25,11 +25,10 @@ public class testAddCarToStock {
         conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
 
         try (PreparedStatement stmt = conn.prepareStatement(
-         "INSERT INTO warehouse_or_dealer (id, email, password, type) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING")) {
+         "INSERT INTO warehouse (id, email, password) VALUES (?, ?, ?) ON CONFLICT DO NOTHING")) {
             stmt.setInt(1, warehouse.getId());
             stmt.setString(2, warehouse.getEmail());
             stmt.setString(3, "testpassword");
-            stmt.setString(4, warehouse.getType());
             stmt.executeUpdate();
         }
     }
@@ -74,7 +73,7 @@ public class testAddCarToStock {
             stmt.executeUpdate();
         }
 
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM warehouse_or_dealer WHERE id = ?")) {
+        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM warehouse WHERE id = ?")) {
             stmt.setInt(1, warehouse.getId());
             stmt.executeUpdate();
         }

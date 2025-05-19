@@ -3,7 +3,6 @@ package yazilim;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -20,8 +19,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -31,22 +28,18 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableColumn;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import java.text.DecimalFormat;
-
 import yazilim.classes.Customer;
-import yazilim.classes.SaleRecord;
-import yazilim.classes.Vehicle;
-import yazilim.classes.WarehouseOrDealer;
+import yazilim.classes.Dealer;
 
 public class CustomerReportPage {
     private JFrame frame;
     private static Connection conn;
-    private WarehouseOrDealer dealer;
+    private Dealer dealer;
     private ArrayList<Customer> customers;
     
     private JPanel customerInfoPanel;
@@ -70,7 +63,7 @@ public class CustomerReportPage {
             public void run() {
                 try {
                     conn = java.sql.DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-                    CustomerReportPage window = new CustomerReportPage(new WarehouseOrDealer(), conn);
+                    CustomerReportPage window = new CustomerReportPage(new Dealer(), conn);
                     window.frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -81,11 +74,11 @@ public class CustomerReportPage {
 
     public CustomerReportPage() throws SQLException {
         conn = java.sql.DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-        dealer = new WarehouseOrDealer();
+        dealer = new Dealer();
         initialize();
     }
 
-    public CustomerReportPage(WarehouseOrDealer dlr, Connection parent_conn) {
+    public CustomerReportPage(Dealer dlr, Connection parent_conn) {
         dealer = dlr;
         conn = parent_conn;
         initialize();

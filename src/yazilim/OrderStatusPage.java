@@ -2,9 +2,7 @@ package yazilim;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
 import yazilim.classes.Customer;
-
 import java.awt.*;
 import java.sql.*;
 

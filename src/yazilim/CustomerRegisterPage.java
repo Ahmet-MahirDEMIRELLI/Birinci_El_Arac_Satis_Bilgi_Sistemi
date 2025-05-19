@@ -2,7 +2,6 @@ package yazilim;
 
 import java.awt.EventQueue;
 import java.awt.Font;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -11,9 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-
 import yazilim.classes.Customer;
-
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;

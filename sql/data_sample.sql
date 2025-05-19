@@ -6,10 +6,13 @@ VALUES
 ('ahmet@example.com', 'hashed_pass4', 'Ahmet', 'Çetin', '05443334455', 'male', 35, 'Avukat', 'medium', 'Bursa'),
 ('elif@example.com', 'hashed_pass5', 'Elif', 'Koç', '05441112233', 'female', 28, 'Grafiker', 'medium', 'Antalya');
 
-INSERT INTO warehouse_or_dealer (email, password, type)
+INSERT INTO dealer (email, password)
 VALUES 
-('dealer@example.com', 'hashed_dealer', 'DEALER'),
-('warehouse@example.com', 'hashed_warehouse', 'WAREHOUSE');
+('dealer@example.com', 'hashed_dealer');
+
+INSERT INTO warehouse(email, password)
+VALUES 
+('warehouse@example.com', 'hashed_warehouse');
 
 INSERT INTO vehicle (brand, model, year, package, price)
 VALUES 

@@ -2,20 +2,16 @@ package yazilim;
 
 import java.awt.EventQueue;
 import java.awt.Font;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-
 import yazilim.classes.Vehicle;
 import yazilim.classes.VehicleStock;
-import yazilim.classes.WarehouseOrDealer;
-
+import yazilim.classes.Dealer;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -29,7 +25,7 @@ import java.awt.event.ActionEvent;
 public class PullCarFromStockPage {
 	private JFrame frame;
 	private static Connection conn;
-	private WarehouseOrDealer dealer;
+	private Dealer dealer;
 	private JComboBox<String> vehicleSelector;
 	private ArrayList<VehicleStock> vehicleStockList = new ArrayList<>();
 	private ArrayList<Vehicle> vehicles = new ArrayList<>();
@@ -43,7 +39,7 @@ public class PullCarFromStockPage {
 			public void run() {
 				try {
 					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-					PullCarFromStockPage window = new PullCarFromStockPage(new WarehouseOrDealer(), conn);
+					PullCarFromStockPage window = new PullCarFromStockPage(new Dealer(), conn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -54,14 +50,14 @@ public class PullCarFromStockPage {
 	
 	public PullCarFromStockPage() throws SQLException {
 		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-		dealer = new WarehouseOrDealer();
+		dealer = new Dealer();
 		initialize();
 	}
 
 	/**
 	 * Create the application.
 	 */
-	public PullCarFromStockPage(WarehouseOrDealer dlr, Connection parent_conn) {
+	public PullCarFromStockPage(Dealer dlr, Connection parent_conn) {
 		dealer = dlr;
 		conn = parent_conn;
 		initialize();

@@ -3,15 +3,12 @@ package yazilim;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
-import yazilim.classes.WarehouseOrDealer;
-
+import yazilim.classes.Warehouse;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -93,7 +90,7 @@ public class WarehouseLoginPage {
 			public void actionPerformed(ActionEvent e) {
 				String email = emailField.getText();
 				String password = passwordField.getText();
-				String query = "SELECT login_warehouse_or_dealer(?,?);";
+				String query = "SELECT login_warehouse(?,?);";
 				try {
 					PreparedStatement statement = conn.prepareStatement(query);
 					statement.setString(1, email);
@@ -102,14 +99,14 @@ public class WarehouseLoginPage {
 					ResultSet r = statement.executeQuery();
 					r.next();
 					if (r.getBoolean(1)) {
-						query = "SELECT id FROM warehouse_or_dealer WHERE email = ? AND type = 'WAREHOUSE';";
+						query = "SELECT id FROM warehouse WHERE email = ?;";
 						PreparedStatement p = conn.prepareStatement(query);
 						p.clearParameters();
 						p.setString(1, emailField.getText());
 						r = p.executeQuery();
 						r.next();
 						
-						WarehouseOrDealer warehouse = new WarehouseOrDealer(r.getInt(1), emailField.getText(), "WAREHOUSE");
+						Warehouse warehouse = new Warehouse(r.getInt(1), emailField.getText());
 						
 						WarehouseMainPage warehouse_main_page = new WarehouseMainPage(warehouse, conn);
 						warehouse_main_page.showFrame();

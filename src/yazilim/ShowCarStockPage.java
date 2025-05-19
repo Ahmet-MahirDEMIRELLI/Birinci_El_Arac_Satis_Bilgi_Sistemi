@@ -2,12 +2,8 @@ package yazilim;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import yazilim.classes.Vehicle;
-import yazilim.classes.VehicleStock;
-
 import java.awt.*;
 import java.sql.*;
-import java.util.ArrayList;
 
 public class ShowCarStockPage {
     private JFrame frame;

@@ -1,12 +1,9 @@
 package yazilim;
 
 import javax.swing.*;
-
 import yazilim.classes.Customer;
 import yazilim.requests.PriceOfferRequest;
-
 import java.awt.*;
-import java.awt.event.*;
 import java.sql.*;
 import java.time.LocalDate;
 

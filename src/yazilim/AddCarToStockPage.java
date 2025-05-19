@@ -1,24 +1,18 @@
 package yazilim;
 
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-
-import yazilim.classes.WarehouseOrDealer;
-
+import yazilim.classes.Warehouse;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,7 +23,7 @@ import java.awt.event.ActionEvent;
 public class AddCarToStockPage {
 	private JFrame frame;
 	private static Connection conn;
-	private WarehouseOrDealer warehouse;
+	private Warehouse warehouse;
 	private JTextField brandField;
 	private JTextField modelField;
 	private JTextField packageField;
@@ -53,7 +47,7 @@ public class AddCarToStockPage {
 			public void run() {
 				try {
 					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-					AddCarToStockPage window = new AddCarToStockPage(new WarehouseOrDealer(), conn);
+					AddCarToStockPage window = new AddCarToStockPage(new Warehouse(), conn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -70,7 +64,7 @@ public class AddCarToStockPage {
 	/**
 	 * Create the application.
 	 */
-	public AddCarToStockPage(WarehouseOrDealer wrhs, Connection parent_conn) {
+	public AddCarToStockPage(Warehouse wrhs, Connection parent_conn) {
 		conn = parent_conn;
 		warehouse = wrhs;
 		initialize();

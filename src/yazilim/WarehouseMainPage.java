@@ -2,26 +2,19 @@ package yazilim;
 
 import java.awt.EventQueue;
 import java.awt.Font;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-
-import yazilim.classes.WarehouseOrDealer;
-
+import yazilim.classes.Warehouse;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
 public class WarehouseMainPage {
 	private JFrame frame;
 	private static Connection conn;
-	private WarehouseOrDealer warehouse;
+	private Warehouse warehouse;
 	
 	/**
 	 * Launch the application.
@@ -31,7 +24,7 @@ public class WarehouseMainPage {
 			public void run() {
 				try {
 					conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-					WarehouseMainPage window = new WarehouseMainPage(new WarehouseOrDealer(), conn);
+					WarehouseMainPage window = new WarehouseMainPage(new Warehouse(), conn);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -42,14 +35,14 @@ public class WarehouseMainPage {
 	
 	public WarehouseMainPage() throws SQLException {
 		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-		warehouse = new WarehouseOrDealer();
+		warehouse = new Warehouse();
 		initialize();
 	}
 
 	/**
 	 * Create the application.
 	 */
-	public WarehouseMainPage(WarehouseOrDealer wrhs, Connection parent_conn) {
+	public WarehouseMainPage(Warehouse wrhs, Connection parent_conn) {
 		warehouse = wrhs;
 		conn = parent_conn;
 		initialize();

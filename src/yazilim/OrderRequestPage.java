@@ -1,10 +1,8 @@
 package yazilim;
 
 import javax.swing.*;
-
 import yazilim.classes.Customer;
 import yazilim.requests.OrderRequest;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;

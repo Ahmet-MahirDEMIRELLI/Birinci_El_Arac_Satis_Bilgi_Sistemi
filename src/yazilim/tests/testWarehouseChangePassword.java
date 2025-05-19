@@ -15,17 +15,16 @@ public class testWarehouseChangePassword {
         conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
 
         // Eski varsa sil
-        PreparedStatement deleteStmt = conn.prepareStatement("DELETE FROM warehouse_or_dealer WHERE id = ?");
+        PreparedStatement deleteStmt = conn.prepareStatement("DELETE FROM warehouse WHERE id = ?");
         deleteStmt.setInt(1, TEST_ID);
         deleteStmt.executeUpdate();
 
         // Yeni test kullanıcısı ekle
         PreparedStatement insertStmt = conn.prepareStatement(
-            "INSERT INTO warehouse_or_dealer (id, email, password, type) VALUES (?, ?, ?, ?)");
+            "INSERT INTO warehouse (id, email, password) VALUES (?, ?, ?)");
         insertStmt.setInt(1, TEST_ID);
         insertStmt.setString(2, "test10000@example.com");
         insertStmt.setString(3, "eski123");
-        insertStmt.setString(4, "warehouse");
         insertStmt.executeUpdate();
     }
 
@@ -46,7 +45,7 @@ public class testWarehouseChangePassword {
 
     private boolean changePassword(int id, String oldPass, String newPass) throws SQLException {
         PreparedStatement ps = conn.prepareStatement(
-            "UPDATE warehouse_or_dealer SET password = ? WHERE id = ? AND password = ?");
+            "UPDATE warehouse SET password = ? WHERE id = ? AND password = ?");
         ps.setString(1, newPass);
         ps.setInt(2, id);
         ps.setString(3, oldPass);
@@ -54,7 +53,7 @@ public class testWarehouseChangePassword {
     }
 
     private String getPasswordFromDb(int id) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("SELECT password FROM warehouse_or_dealer WHERE id = ?");
+        PreparedStatement ps = conn.prepareStatement("SELECT password FROM warehouse WHERE id = ?");
         ps.setInt(1, id);
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
@@ -67,7 +66,7 @@ public class testWarehouseChangePassword {
     static void tearDown() throws Exception {
     	  // Test kullanıcı sil
         PreparedStatement deleteUser = conn.prepareStatement(
-            "DELETE FROM warehouse_or_dealer WHERE id = ?");
+            "DELETE FROM warehouse WHERE id = ?");
         deleteUser.setInt(1, TEST_ID);
         deleteUser.executeUpdate();
         

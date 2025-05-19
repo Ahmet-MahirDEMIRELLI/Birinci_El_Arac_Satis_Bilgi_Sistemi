@@ -1,19 +1,16 @@
 package yazilim;
 
 import javax.swing.*;
-
-import yazilim.classes.WarehouseOrDealer;
-
-import java.awt.*;
+import yazilim.classes.Warehouse;
 import java.awt.event.*;
 import java.sql.*;
 
 public class WarehouseChangePassword {
     private JFrame frame;
     private Connection conn;
-    private WarehouseOrDealer warehouse;
+    private Warehouse warehouse;
 
-    public WarehouseChangePassword(Connection conn, WarehouseOrDealer warehouse) {
+    public WarehouseChangePassword(Connection conn, Warehouse warehouse) {
         this.conn = conn;
         this.warehouse = warehouse;
         initialize();
@@ -72,7 +69,7 @@ public class WarehouseChangePassword {
 
                 try {
                     PreparedStatement ps = conn.prepareStatement(
-                    		 "UPDATE warehouse_or_dealer SET password = ? WHERE id = ? AND password = ?"
+                    		 "UPDATE warehouse SET password = ? WHERE id = ? AND password = ?"
                     );
                     ps.setString(1, yeni);
                     ps.setInt(2, warehouse.getId());

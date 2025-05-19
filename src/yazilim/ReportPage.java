@@ -38,12 +38,12 @@ import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import java.text.DecimalFormat;
 import yazilim.classes.SaleRecord;
 import yazilim.classes.Vehicle;
-import yazilim.classes.WarehouseOrDealer;
+import yazilim.classes.Dealer;
 
 public class ReportPage {
     private JFrame frame;
     private static Connection conn;
-    private WarehouseOrDealer dealer;
+    private Dealer dealer;
     private ChartPanel countChartPanel;
     private ChartPanel priceChartPanel;
     private JScrollPane saleHistoryScrollPane;
@@ -61,7 +61,7 @@ public class ReportPage {
             public void run() {
                 try {
                     conn = java.sql.DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-                    ReportPage window = new ReportPage(new WarehouseOrDealer(), conn);
+                    ReportPage window = new ReportPage(new Dealer(), conn);
                     window.frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -72,11 +72,11 @@ public class ReportPage {
 
     public ReportPage() throws SQLException {
         conn = java.sql.DriverManager.getConnection("jdbc:postgresql://localhost:5432/YazilimMuhProje", "postgres", "12345");
-        dealer = new WarehouseOrDealer();
+        dealer = new Dealer();
         initialize();
     }
 
-    public ReportPage(WarehouseOrDealer dlr, Connection parent_conn) {
+    public ReportPage(Dealer dlr, Connection parent_conn) {
         dealer = dlr;
         conn = parent_conn;
         initialize();
