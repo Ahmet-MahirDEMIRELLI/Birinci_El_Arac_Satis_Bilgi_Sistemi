@@ -165,19 +165,54 @@ public class DealerRequestPage {
             if (index != -1) {
                 try {
                     int requestId = testDriveRequestIds.get(index);
-                    PreparedStatement ps = conn.prepareStatement(
-                        "UPDATE requests SET status = 'accepted' WHERE request_id = ?"
+                    
+                    // 1. vehicle_id'yi al
+                    PreparedStatement psSelect = conn.prepareStatement(
+                        "SELECT vehicle_id FROM requests WHERE request_id = ?"
                     );
-                    ps.setInt(1, requestId);
-                    ps.executeUpdate();
-                    JOptionPane.showMessageDialog(frame, "Test sürüşü onaylandı.");
-                    loadRequests();
+                    psSelect.setInt(1, requestId);
+                    ResultSet rs = psSelect.executeQuery();
+
+                    if (rs.next()) {
+                        int vehicleId = rs.getInt("vehicle_id");
+
+                        // 2. Stok kontrolü yap
+                        PreparedStatement psCheckStock = conn.prepareStatement(
+                            "SELECT SUM(quantity) AS total_stock FROM stock WHERE vehicle_id = ?"
+                        );
+                        psCheckStock.setInt(1, vehicleId);
+                        ResultSet rsStock = psCheckStock.executeQuery();
+
+                        if (rsStock.next()) {
+                            int totalStock = rsStock.getInt("total_stock");
+                            
+                            if (totalStock > 0) {
+                                // 3. Talebi onayla
+                                PreparedStatement psUpdate = conn.prepareStatement(
+                                    "UPDATE requests SET status = 'accepted' WHERE request_id = ?"
+                                );
+                                psUpdate.setInt(1, requestId);
+                                psUpdate.executeUpdate();
+
+                                JOptionPane.showMessageDialog(frame, "Test sürüşü onaylandı.");
+                                loadRequests();
+                            } else {
+                                JOptionPane.showMessageDialog(frame, "Bu araç için stok bulunmamaktadır.");
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(frame, "Bu araç için stok bilgisi bulunamadı.");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "İlgili talep bulunamadı.");
+                    }
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(frame, "Hata oluştu.");
                 }
             }
         });
+
 
         rejectTestBtn.addActionListener(e -> {
             int index = testDriveList.getSelectedIndex();
