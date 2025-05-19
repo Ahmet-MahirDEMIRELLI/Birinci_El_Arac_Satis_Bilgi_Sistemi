@@ -178,7 +178,7 @@ public class DealerRequestPage {
 
                         // 2. Stok kontrolü yap
                         PreparedStatement psCheckStock = conn.prepareStatement(
-                            "SELECT SUM(quantity) AS total_stock FROM stock WHERE vehicle_id = ?"
+                            "SELECT SUM(quantity) AS total_stock FROM stock WHERE vehicle_id = ? and location_type='dealer' "
                         );
                         psCheckStock.setInt(1, vehicleId);
                         ResultSet rsStock = psCheckStock.executeQuery();
