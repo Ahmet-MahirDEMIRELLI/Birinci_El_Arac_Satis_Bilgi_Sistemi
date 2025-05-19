@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -33,6 +34,8 @@ import javax.swing.table.TableColumn;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+
 import yazilim.classes.Customer;
 import yazilim.classes.Dealer;
 
@@ -49,9 +52,18 @@ public class CustomerReportPage {
     private JLabel totalLabel;
     private int saleHistoryCustomerId = -1;
     
+    private JScrollPane testDriveHistoryScrollPane;
+    private int testDriveHistoryCustomerId = -1;
+    
+    private JScrollPane priceOfferHistoryScrollPane;
+    private JLabel priceOfferTotalLabel;
+    private int priceOfferHistoryCustomerId = -1;
+    
     private ChartPanel ageChartPanel;
     private ChartPanel incomeChartPanel;
     private ChartPanel saleStatisticsChartPanel;
+    private ChartPanel priceOfferRequestPerYearChartPanel;
+    private ChartPanel testDriveRequestPerYearChartPanel;
     private int statisticsCustomerId = -1;
     
 
@@ -87,7 +99,7 @@ public class CustomerReportPage {
     private void initialize() {
         frame = new JFrame();
         frame.setTitle("Rapor Sayfası");
-        frame.setBounds(100, 100, 1330, 600);
+        frame.setBounds(100, 0, 1330, 850);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
         
@@ -109,7 +121,7 @@ public class CustomerReportPage {
         frame.getContentPane().add(customerSelector);
 
         JButton showAllInfoButton = new JButton("Tüm Bilgilerini Gör");
-        showAllInfoButton.setBounds(315, 80, 200, 30);
+        showAllInfoButton.setBounds(135, 80, 200, 30);
         frame.getContentPane().add(showAllInfoButton);
         showAllInfoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -135,7 +147,7 @@ public class CustomerReportPage {
         });
         
         JButton saleHistortyButton = new JButton("Satın Alımları Gör");
-        saleHistortyButton.setBounds(565, 80, 200, 30);
+        saleHistortyButton.setBounds(350, 80, 200, 30);
         frame.getContentPane().add(saleHistortyButton);
         saleHistortyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -166,9 +178,75 @@ public class CustomerReportPage {
                 }
             }
         });
+        
+        JButton testDriveHistoryButton = new JButton("Test Sürüşlerini Gör");
+        testDriveHistoryButton.setBounds(565, 80, 200, 30);
+        frame.getContentPane().add(testDriveHistoryButton);
+        testDriveHistoryButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	clear("test-drive-history");
+            	int selectedIndex = customerSelector.getSelectedIndex();
+                if (selectedIndex != -1) {
+                    int customerId = indexToCustomerIdMap.get(selectedIndex);
+                    if(customerId == 0) {  // Tüm müşteriler işlemi
+                    	clearTestDriveHistoryScrollPane();
+                    	testDriveHistoryCustomerId = 0;
+                    	JOptionPane.showMessageDialog(null, "Bu özelliği kullanmak için belli bir müşteri seçiniz.");
+                    }
+                    else if(testDriveHistoryCustomerId != customerId) {
+                    	clearTestDriveHistoryScrollPane();
+                    	testDriveHistoryCustomerId = customerId;
+                    	try {
+                    		PreparedStatement stmt = conn.prepareStatement("SELECT vehicle_id, request_date, status FROM requests WHERE request_type = 'test_drive' AND user_id = ?;");
+                    	    stmt.setInt(1, customerId);
+                    	    ResultSet rs = stmt.executeQuery();
+                    	    showTestDriveHistoryData(rs);
+                    	} catch (SQLException ex) {
+                    	    ex.printStackTrace();
+                    	}
+                    }
+                    
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Lütfen bir müşteri seçin.");
+                }
+            }
+        });
+        
+        JButton priceOfferHistoryButton = new JButton("Fiyat Teklifi Taleplerini Gör");
+        priceOfferHistoryButton.setBounds(780, 80, 200, 30);
+        frame.getContentPane().add(priceOfferHistoryButton);
+        priceOfferHistoryButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	clear("price-offer-history");
+            	int selectedIndex = customerSelector.getSelectedIndex();
+                if (selectedIndex != -1) {
+                    int customerId = indexToCustomerIdMap.get(selectedIndex);
+                    if(customerId == 0) {  // Tüm müşteriler işlemi
+                    	clearPriceOfferHistoryScrollPane();
+                    	priceOfferHistoryCustomerId = 0;
+                    	JOptionPane.showMessageDialog(null, "Bu özelliği kullanmak için belli bir müşteri seçiniz.");
+                    }
+                    else if(priceOfferHistoryCustomerId != customerId) {
+                    	clearPriceOfferHistoryScrollPane();
+                    	priceOfferHistoryCustomerId = customerId;
+                    	try {
+                    		PreparedStatement stmt = conn.prepareStatement("SELECT request_id, vehicle_id, request_date, status FROM requests WHERE request_type = 'price_offer' AND user_id = ?;");
+                    	    stmt.setInt(1, customerId);
+                    	    ResultSet rs = stmt.executeQuery();
+                    	    showPriceOfferHistoryData(rs);
+                    	} catch (SQLException ex) {
+                    	    ex.printStackTrace();
+                    	}
+                    }
+                    
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Lütfen bir müşteri seçin.");
+                }
+            }
+        });
 
         JButton showStatisticsButton = new JButton("İstatistikleri Gör");
-        showStatisticsButton.setBounds(815, 80, 200, 30);
+        showStatisticsButton.setBounds(995, 80, 200, 30);
         frame.getContentPane().add(showStatisticsButton);
         showStatisticsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -183,8 +261,38 @@ public class CustomerReportPage {
                     	addIncomePieChart();
                     	
 						try {
-							PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM requests WHERE request_type = 'price_offer' AND status = 'accepted';");
+							PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM customer;");
 							ResultSet rs = stmt.executeQuery();
+	                	    int customerCount = 0;
+	                	    if (rs.next()) {
+	                	    	customerCount = rs.getInt(1);
+	                	    }
+	                	    
+	                	    stmt = conn.prepareStatement("SELECT request_date FROM requests WHERE request_type = 'price_offer';");
+							rs = stmt.executeQuery();
+							Map<Integer, Integer> priceOfferRequestMap = new HashMap<>();
+	                	    while (rs.next()) {
+	                	    	LocalDate date = rs.getDate("request_date").toLocalDate();
+	                	        int year = date.getYear();
+	                	        priceOfferRequestMap.put(year, priceOfferRequestMap.getOrDefault(year, 0) + 1);
+	                	    }
+	                	    
+	                	    addPriceOfferRequestPerYearPieChart(priceOfferRequestMap);
+	                	    
+	                	    stmt = conn.prepareStatement("SELECT request_date FROM requests WHERE request_type = 'test_drive';");
+							rs = stmt.executeQuery();
+	                	    Map<Integer, Integer> testDriveRequestMap = new HashMap<>();
+	                	    while (rs.next()) {
+	                	    	LocalDate date = rs.getDate("request_date").toLocalDate();
+	                	        int year = date.getYear();
+	                	        testDriveRequestMap.put(year, testDriveRequestMap.getOrDefault(year, 0) + 1);
+	                	    }
+							
+							
+	                	    addTestDriveRequestPerYearPieChart(testDriveRequestMap);
+							
+							stmt = conn.prepareStatement("SELECT COUNT(*) FROM requests WHERE request_type = 'price_offer' AND status = 'accepted';");
+							rs = stmt.executeQuery();
 	                	    int priceRequestCount = 0;
 	                	    if (rs.next()) {
 	                	        priceRequestCount = rs.getInt(1);
@@ -392,6 +500,38 @@ public class CustomerReportPage {
 		}
     }
     
+    private void addPriceOfferRequestPerYearPieChart(Map<Integer, Integer> map) {
+    	DefaultPieDataset priceOfferRequestPerYearDataset = new DefaultPieDataset();
+    	for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+    		priceOfferRequestPerYearDataset.setValue(entry.getKey(), entry.getValue());
+    	}
+
+	    JFreeChart priceOfferRequestPerYearChart = ChartFactory.createPieChart("Yıllara Göre Fiyat Teklifi Talep Sayısı", priceOfferRequestPerYearDataset, true, true, false);
+	    PiePlot countPlot = (PiePlot) priceOfferRequestPerYearChart.getPlot();
+
+	    countPlot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0}: {1} adet ({2})", new DecimalFormat("0"), new DecimalFormat("0.0%")));
+
+	    priceOfferRequestPerYearChartPanel = new ChartPanel(priceOfferRequestPerYearChart);
+	    priceOfferRequestPerYearChartPanel.setBounds(250, 470, 400, 300);
+	    frame.getContentPane().add(priceOfferRequestPerYearChartPanel);
+    }
+    
+    private void addTestDriveRequestPerYearPieChart(Map<Integer, Integer> map) {
+    	DefaultPieDataset testDriveRequestPerYearDataset = new DefaultPieDataset();
+    	for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+    		testDriveRequestPerYearDataset.setValue(entry.getKey(), entry.getValue());
+    	}
+
+	    JFreeChart testDriveRequestPerYearChart = ChartFactory.createPieChart("Yıllara Göre Sürüş Talep Sayısı", testDriveRequestPerYearDataset, true, true, false);
+	    PiePlot countPlot = (PiePlot) testDriveRequestPerYearChart.getPlot();
+
+	    countPlot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0}: {1} adet ({2})", new DecimalFormat("0"), new DecimalFormat("0.0%")));
+
+	    testDriveRequestPerYearChartPanel = new ChartPanel(testDriveRequestPerYearChart);
+	    testDriveRequestPerYearChartPanel.setBounds(680, 470, 400, 300);
+	    frame.getContentPane().add(testDriveRequestPerYearChartPanel);
+    }
+    
     private void addSaleAfterPriceOfferPieChart(int priceRequestCount, int saleCount) {
     	DefaultPieDataset saleStatisticsDataset = new DefaultPieDataset();
 	    saleStatisticsDataset.setValue("Tamamlanan Sipariş Sayısı", saleCount);
@@ -411,12 +551,20 @@ public class CustomerReportPage {
     	if(caller.equals("customer-info")) {
     		clearSaleHistoryScrollPane();
     		saleHistoryCustomerId = -1;
+    		clearTestDriveHistoryScrollPane();
+    		testDriveHistoryCustomerId = -1;
+    		clearPriceOfferHistoryScrollPane();
+    		priceOfferHistoryCustomerId = -1;
     		clearStatisticsCharts();
     		statisticsCustomerId = -1;
     	}
     	else if(caller.equals("show-sales")) {
     		clearCustomerInfoPanel();
     		customerInfoCustomerId = -1;
+    		clearTestDriveHistoryScrollPane();
+    		testDriveHistoryCustomerId = -1;
+    		clearPriceOfferHistoryScrollPane();
+    		priceOfferHistoryCustomerId = -1;
     		clearStatisticsCharts();
     		statisticsCustomerId = -1;
     	}
@@ -425,6 +573,30 @@ public class CustomerReportPage {
     		customerInfoCustomerId = -1;
     		clearSaleHistoryScrollPane();
     		saleHistoryCustomerId = -1;
+    		clearTestDriveHistoryScrollPane();
+    		testDriveHistoryCustomerId = -1;
+    		clearPriceOfferHistoryScrollPane();
+    		priceOfferHistoryCustomerId = -1;
+    	}
+    	else if(caller.equals("test-drive-history")) {
+    		clearCustomerInfoPanel();
+    		customerInfoCustomerId = -1;
+    		clearSaleHistoryScrollPane();
+    		saleHistoryCustomerId = -1;
+    		clearPriceOfferHistoryScrollPane();
+    		priceOfferHistoryCustomerId = -1;
+    		clearStatisticsCharts();
+    		statisticsCustomerId = -1;
+    	}
+    	else if(caller.equals("price-offer-history")) {
+    		clearCustomerInfoPanel();
+    		customerInfoCustomerId = -1;
+    		clearSaleHistoryScrollPane();
+    		saleHistoryCustomerId = -1;
+    		clearTestDriveHistoryScrollPane();
+    		testDriveHistoryCustomerId = -1;
+    		clearStatisticsCharts();
+    		statisticsCustomerId = -1;
     	}
 
     	frame.revalidate();
@@ -449,6 +621,20 @@ public class CustomerReportPage {
         }
     }
     
+    private void clearTestDriveHistoryScrollPane() {
+    	if (testDriveHistoryScrollPane != null) {
+            frame.getContentPane().remove(testDriveHistoryScrollPane);
+            testDriveHistoryScrollPane = null;
+        }
+    }
+    
+    private void clearPriceOfferHistoryScrollPane() {
+    	if (priceOfferHistoryScrollPane != null) {
+            frame.getContentPane().remove(priceOfferHistoryScrollPane);
+            priceOfferHistoryScrollPane = null;
+        }
+    }
+    
     private void clearStatisticsCharts() {
     	if (ageChartPanel != null) {
             frame.getContentPane().remove(ageChartPanel);
@@ -461,6 +647,14 @@ public class CustomerReportPage {
     	if (saleStatisticsChartPanel != null) {
             frame.getContentPane().remove(saleStatisticsChartPanel);
             saleStatisticsChartPanel = null;
+        }
+    	if (priceOfferRequestPerYearChartPanel != null) {
+            frame.getContentPane().remove(priceOfferRequestPerYearChartPanel);
+            priceOfferRequestPerYearChartPanel = null;
+        }
+    	if (testDriveRequestPerYearChartPanel != null) {
+            frame.getContentPane().remove(testDriveRequestPerYearChartPanel);
+            testDriveRequestPerYearChartPanel = null;
         }
     }
     
@@ -511,6 +705,95 @@ public class CustomerReportPage {
 	    frame.getContentPane().add(saleHistoryScrollPane);
     }
     
+    private void showTestDriveHistoryData(ResultSet rs) {
+    	String[] columnNames = {"#", "Araç", "Talep Tarihi", "Durum"};
+	    ArrayList<Object[]> rowData = new ArrayList<>();
+	    int counter = 1;
+	    try {
+			while (rs.next()) {
+			    int vehicleId = rs.getInt("vehicle_id");
+			    String requestDate = translateDate(rs.getDate("request_date"));
+			    String status = translateStatus(rs.getString("status"));
+			    String carInfo = getCarInfo(vehicleId);
+			    
+			    rowData.add(new Object[]{counter, carInfo, requestDate, status});
+			    counter++;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	    Object[][] data = rowData.toArray(new Object[0][]);
+
+	    JTable table = new JTable(data, columnNames);
+	    TableColumn countColumn = table.getColumnModel().getColumn(0);
+	    countColumn.setMinWidth(20);
+	    countColumn.setMaxWidth(20);
+	    countColumn.setPreferredWidth(20);
+
+	    testDriveHistoryScrollPane = new JScrollPane(table);
+	    testDriveHistoryScrollPane.setBounds(215, 150, 900, 300);
+
+	    frame.getContentPane().add(testDriveHistoryScrollPane);
+    }
+    
+    private void showPriceOfferHistoryData(ResultSet rs) {
+    	String[] columnNames = {"#", "Araç", "Talep Tarihi", "Durum", "Teklif Edilen Fiyat"};
+	    ArrayList<Object[]> rowData = new ArrayList<>();
+	    int counter = 1;
+	    try {
+			while (rs.next()) {
+				int requestId = rs.getInt("request_id");
+			    int vehicleId = rs.getInt("vehicle_id");
+			    String requestDate = translateDate(rs.getDate("request_date"));
+			    String status = translateStatus(rs.getString("status"));
+			    String carInfo = getCarInfo(vehicleId);
+			    
+			    String query = "SELECT offered_price FROM price_offers WHERE request_id = ?;";
+			    PreparedStatement stmt = conn.prepareStatement(query);
+        	    stmt.setInt(1, requestId);
+        	    ResultSet rs1 = stmt.executeQuery();
+        	    
+        	    String tmp = "";
+        	    if(status.equals("Onaylandı")) {
+        	    	BigDecimal offeredPrice = new BigDecimal(0.00);
+        	    	if(rs1.next()) {
+            	    	offeredPrice = rs1.getBigDecimal("offered_price");
+            	    	tmp = String.format("%.2f₺", offeredPrice);
+            	    	status = "Müşterinin Sipariş Vermesi Bekleniyor";
+            	    }
+            	    else {
+            	    	tmp = "Satışı Yapıldı";
+            	    }
+        	    }
+        	    else {
+        	    	status = "Müşteri Fiyat Teklifi Vermenizi Bekliyor";
+        	    }
+        	    
+			    
+			    rowData.add(new Object[]{counter, carInfo, requestDate, status, tmp});
+			    counter++;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	    Object[][] data = rowData.toArray(new Object[0][]);
+
+	    JTable table = new JTable(data, columnNames);
+	    TableColumn countColumn = table.getColumnModel().getColumn(0);
+	    countColumn.setMinWidth(20);
+	    countColumn.setMaxWidth(20);
+	    countColumn.setPreferredWidth(20);
+
+	    priceOfferHistoryScrollPane = new JScrollPane(table);
+	    priceOfferHistoryScrollPane.setBounds(215, 150, 900, 300);
+
+	    frame.getContentPane().add(priceOfferHistoryScrollPane);
+    }
+
     private String getCarInfo(int vehicleId) {
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT brand, model, year, package FROM vehicle WHERE vehicle_id = ?");
@@ -588,6 +871,28 @@ public class CustomerReportPage {
     private String translateTimestamp(Timestamp timestamp) {
     	String date =  timestamp.toString().split(" ")[0];
     	return date.split("-")[2] + " " + getMonth(date.split("-")[1]) + " " + date.split("-")[0];
+    }
+    
+    private String translateDate(Date date) {
+    	String[] parts =  date.toString().split("-");
+    	return parts[2] + " " + getMonth(parts[1]) + " " + parts[0];
+    }
+    
+    private String translateStatus(String statusEng) {
+    	String status = "";
+    	switch(statusEng) {
+    	case "pending":
+    		status = "Onay Bekliyor";
+    		break;
+    	case "accepted":
+    		status = "Onaylandı";
+    		break;
+    	case "rejected":
+    		status = "Talep Reddedildi";
+    		break;
+    	}
+    	
+    	return status;
     }
     
     private String getMonth(String monthValue) {

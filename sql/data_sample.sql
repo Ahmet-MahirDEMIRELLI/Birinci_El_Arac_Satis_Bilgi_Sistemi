@@ -111,7 +111,12 @@ VALUES
 
 -- 2024 1. dönem
 (4, 'order', 4, '2024-01-20', 'accepted'),   -- request_id = 31
-(3, 'order', 1, '2024-03-22', 'accepted');   -- request_id = 32
+(3, 'order', 1, '2024-03-22', 'accepted'),   -- request_id = 32
+
+(4, 'test_drive', 4, '2023-01-20', 'accepted'),   -- request_id = 33
+(3, 'test_drive', 1, '2024-03-22', 'accepted'),   -- request_id = 34
+(2, 'test_drive', 5, '2024-07-22', 'accepted'),   -- request_id = 35
+(1, 'test_drive', 1, '2022-08-18', 'accepted');   -- request_id = 36
 
 
 INSERT INTO price_offers (request_id, user_id, vehicle_id, offer_date, offered_price)
