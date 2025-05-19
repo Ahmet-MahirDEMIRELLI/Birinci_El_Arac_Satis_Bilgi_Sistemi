@@ -181,9 +181,10 @@ public class OrderRequestPage {
         try {
             String query = """
                 SELECT v.vehicle_id, v.brand, v.model, v.year, p.offer_id, p.offered_price, p.offer_date
-                FROM vehicle v
-                JOIN price_offers p ON v.vehicle_id = p.vehicle_id
-                WHERE p.user_id = ?
+				FROM vehicle v
+				JOIN price_offers p ON v.vehicle_id = p.vehicle_id
+				WHERE p.user_id = ? AND 
+				v.vehicle_id NOT IN (SELECT vehicle_id FROM requests WHERE user_id = p.user_id AND request_type = 'order' AND status = 'pending');
             """;
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, customer.getCustomerId()); 
