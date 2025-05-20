@@ -123,6 +123,7 @@ public class OrderRequestPage {
                         OrderRequest request = new OrderRequest(customer.getCustomerId(), vehicleId, LocalDate.now(), conn, offerId);
                         if (request.processRequest(customer.getCustomerId(), vehicleId, LocalDate.now())) {
                             JOptionPane.showMessageDialog(frame, "Sipariş başarıyla gönderildi.");
+                            loadEligibleVehicles();
                         } else {
                             JOptionPane.showMessageDialog(frame, "Sipariş gönderilemedi.");
                         }
@@ -189,6 +190,8 @@ public class OrderRequestPage {
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, customer.getCustomerId()); 
             ResultSet rs = stmt.executeQuery();
+            
+            vehicleCombo.removeAllItems();
 
             while (rs.next()) {
                 int offerId = rs.getInt("offer_id");

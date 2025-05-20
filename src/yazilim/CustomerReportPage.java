@@ -100,7 +100,7 @@ public class CustomerReportPage {
         frame = new JFrame();
         frame.setTitle("Rapor Sayfası");
         frame.setBounds(100, 0, 1330, 850);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().setLayout(null);
         
         customers = getAllCustomers();

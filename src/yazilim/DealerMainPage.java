@@ -54,7 +54,7 @@ public class DealerMainPage {
 	private void initialize() {
 	    frame = new JFrame();
 	    frame.setTitle("Bayi Ana Sayfası");
-	    frame.setBounds(100, 100, 500, 500);
+	    frame.setBounds(100, 100, 500, 560);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.getContentPane().setLayout(null);
 
@@ -123,6 +123,15 @@ public class DealerMainPage {
 	    reportButton.setFocusable(false);
 	    reportButton.addActionListener(e -> new ReportPage(dealer, conn));
 	    frame.getContentPane().add(reportButton);
+	    
+	    y += 60;
+	    
+	    JButton customerReportButton = new JButton("Müşteri Rapor Sayfası");
+	    customerReportButton.setBounds(buttonX, y, buttonWidth, buttonHeight);
+	    customerReportButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+	    customerReportButton.setFocusable(false);
+	    customerReportButton.addActionListener(e -> new CustomerReportPage(dealer, conn));
+	    frame.getContentPane().add(customerReportButton);
 
 	    y += 60;
 
