@@ -19,3 +19,5 @@
 - /sql altındaki create_sql ve data_sample.sql kodlarını sırayla çalıştırınız.
 - Main.java içinden DB username ve password bilgilerini güncelleyiniz.
 - Eclipse veya tercihiniz olan başka bir IDE ile programı Main.java'dan çalıştırınız.
+
+## Not: 98
